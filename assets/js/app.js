@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const router = new Router(app);
 
     router.addRoute("login", "pages/login.html");
-    router.addRoute("reservas", "pages/reservas.html");
+    router.addRoute("reservas", "pages/reservations.html");
     router.addRoute("dashboard", "pages/dashboard.html");
     router.addRoute("registro", "pages/register.html");
 
