@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     router.addRoute("login", "pages/login.html");
     router.addRoute("reservas", "pages/reservas.html");
     router.addRoute("dashboard", "pages/dashboard.html");
+    router.addRoute("registro", "pages/register.html");
 
     router.init();
 });
