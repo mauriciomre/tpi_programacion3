@@ -16,7 +16,7 @@ export class Router {
 
     async handleRouteChange() {
         const hash = location.hash.slice(2); // "#/login" → "login"
-        const route = this.routes[hash] || this.routes["login"];
+        const route = this.routes[hash] || this.routes["habitaciones"];
         await this.loadPage(route);
     }
 
