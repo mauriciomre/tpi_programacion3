@@ -1,4 +1,4 @@
-import { getUsers } from "../services/userServices.js";
+import { getUsers } from "../services/apiServices";
 
 let usuarios = await getUsers();
 
