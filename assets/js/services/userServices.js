@@ -1,4 +1,4 @@
-const API_URL = "https://66b12345e5b3a9.mockapi.io/api/v1/users";
+const API_URL = "https://6914d9e73746c71fe049d586.mockapi.io/users";
 
 export async function getUsers() {
     const response = await fetch(API_URL);
