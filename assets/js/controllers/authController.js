@@ -67,7 +67,13 @@ export async function handleRegister(nombre, email, password) {
 
     // Se intenta crear user con role USUARIO por defecto
     try{
-         const existeUsuario = await userService.create({
+        const existingUser = await userService.getByEmail(email);
+        
+        if (existingUser !== null) {
+            alert('Este email ya esta registrado');
+            return false;
+        }
+         const newUser = await userService.create({
             nombre: nombre,
             email: email,
             password: password,
