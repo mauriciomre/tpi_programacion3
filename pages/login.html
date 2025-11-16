@@ -1,51 +1,56 @@
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="login-box">
-        <!-- /.login-logo -->
-        <div class="card card-outline card-primary">
-            <div class="card-header text-center">
-                <a href="" class="h1"><b>Login</b></a>
-            </div>
-            <div class="card-body">
-                <p class="login-box-msg">Inicia sesión para ver tus reservas</p>
+<div class="container h-100" style="margin-top: 150px">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <div class="card shadow-lg p-4 card-personalizada">
 
-                <form id="loginForm">
-                    <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email" required>
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-envelope"></span>
+                <div class="card-header text-center">
+                    <h3 class="card-title">ACCEDER</h3>
+                </div>
+
+                <div class="card-body">
+                    <p class="login-box-msg">Inicia sesión para ver tus reservas</p>
+
+                    <form id="loginForm">
+                        <div class="input-group mb-3">
+                            <input type="email" name="email" class="form-control" placeholder="Email" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password" required>
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
+
+                        <div class="input-group mb-3">
+                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col d-flex justify-content-center">
-                            <div class="px-1">
-                                <p>Aún no tenes cuenta?</p>
-                            </div>
-                            <div class="px-1">
-                                <p class="mb-0">
-                                    <a href="#/registro" class="text-center">Registrarse</a>
-                                </p>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
                             </div>
                         </div>
-                    </div>
-                </form>
+
+                        <div class="row">
+                            <div class="col d-flex justify-content-center">
+                                <div class="px-1">
+                                    <p>Aún no tenes cuenta?</p>
+                                </div>
+                                <div class="px-1">
+                                    <p class="mb-0">
+                                        <a href="#/registro" class="text-primary-custom">Registrarse</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
             </div>
-            <!-- /.card-body -->
         </div>
-        <!-- /.card -->
     </div>
 </div>
