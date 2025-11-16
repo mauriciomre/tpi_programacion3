@@ -93,3 +93,60 @@ export async function handleRegister(nombre, email, password) {
         return false;
     }
 }
+
+
+// funciones para el administrador (Crear usuario y cambiar contraseña)
+
+export async function adminCreateUser(nombre, email, password, role) {
+    console.log(`intentando registrar con ${email}, ${nombre} y ${role}`);
+
+    if (nombre === "" || email === "" || password === "" || role === "") {
+        alert("No puedes dejar campos vacios");
+        return false;
+    }
+
+    // Admin crea user con eleccion de role
+    try {
+        const existingUser = await userService.getByEmail(email);
+
+        if (existingUser !== null) {
+            alert("Este email ya esta registrado");
+            return false;
+        }
+        const newUser = await userService.create({
+            nombre: nombre,
+            email: email,
+            password: password,
+            role: role
+        });
+
+        console.log("Usuario creado por admin:", newUser);
+
+        saveUser(newUser);
+        alert(`Usuario ${newUser.nombre} creado`);
+
+        return true;
+
+    } catch (error) {
+        console.error(`Error de login: ${error}`);
+        alert("Error al crear usuario.");
+        return false;
+    }
+}
+
+export async function adminChangePassword(idUser, newPassword) {
+    if (newPassword === "") {
+        alert('Debes ingresar una contraseña');
+        return false;
+    }
+
+    try {
+        await userService.changePassword(idUser, newPassword);
+        alert('Contraseña cambiada con exito.');
+
+        return true;
+    } catch (error){
+        alert('Error al cambiar de contraseña');
+        return false;
+    }
+}
