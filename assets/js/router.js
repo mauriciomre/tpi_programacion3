@@ -22,7 +22,7 @@ export class Router {
 
     async handleRouteChange() {
         const hash = location.hash.slice(2);
-        const route = this.routes[hash] || this.routes["habitaciones"];
+        const route = this.routes[hash] || this.routes["dashboard"];
         await this.loadPage(route);
     }
 

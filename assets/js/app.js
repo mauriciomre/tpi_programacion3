@@ -1,5 +1,6 @@
 import { Router } from "./router.js";
 import { initDatePickers } from "./utils/date-init.js";
+import { reservationController } from "./controllers/reservationController.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
@@ -14,8 +15,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // 👇 Se ejecuta DESPUÉS de cada carga de vista
     router.onPageLoaded = (path) => {
         // Ejecutar solo en la página de reservas
-        if (path.includes("rooms.html")) {
+        if (path.includes("reservations.html")) {
             initDatePickers();
+        }
+
+        switch (path) {
+            case "pages/reservations.html":
+                reservationController();
+                break;
+
+            // CASE PARA CADA CONTROLLER
         }
     };
 
