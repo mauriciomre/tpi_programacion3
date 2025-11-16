@@ -1,6 +1,7 @@
 import { Router } from "./router.js";
 import { initDatePickers } from "./utils/date-init.js";
 import { reservationController } from "./controllers/reservationController.js";
+import { renderizarLoginView, renderizarRegisterView } from "./views/loginView.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
@@ -20,10 +21,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         switch (path) {
+            case "pages/login.html":
+                renderizarLoginView();
+                break
+            case "pages/register.html":
+                renderizarRegisterView();
+                break
             case "pages/reservations.html":
                 reservationController();
                 break;
-
+            
             // CASE PARA CADA CONTROLLER
         }
     };
