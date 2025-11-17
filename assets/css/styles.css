@@ -3,6 +3,7 @@
     transition: 0.3s;
     font-family: "Amatic SC", cursive;
     font-size: 1.5rem;
+    background-color: #0a322c;
 }
 
 .navbar-nav .nav-link:hover {
@@ -17,8 +18,7 @@
     background-position: center;
     background-repeat: no-repeat;
     min-height: 100vh;
-    width: 100vw;
-    margin-top: 80px;
+    width: 100%;
     padding: 0;
     position: relative;
     display: flex;
@@ -52,27 +52,18 @@
 .titulo-carrusel-general {
     text-align: center;
     color: white;
-    margin-bottom: 15px;
     font-size: 2.2rem;
     font-family: "Amatic SC", cursive;
-    text-shadow: 2px 2px 6px black;
-}
-
-.carousel-inner {
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
     background: #0a322c;
-    padding-top: 40px;
+    padding: 35px;
+    margin: 0;
 }
 
 .carousel-caption {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     font-size: 1.3rem;
-}
 
-figure img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
 }
 
 .btn-primary {
@@ -90,24 +81,26 @@ figure img {
 }
 
 .card-personalizada {
-    max-width: 550px !important;
+    max-width: 100% !important;
     width: 100%;
     border-radius: 12px;
     border: none;
+    box-shadow: #0a322c;
 
 }
 
-.card-header {
+.carousel-slider {
+    margin: 0;
+}
+
+.card-personalizada .card-header {
     border-top: none !important;
     background-color: #0a322c !important;
     border-color: #0a322c !important;
     color: #fff !important;
-    font-family: "Raleway";
-
-
 }
 
-.card-title {
+.card-personalizada .card-title {
     font-family: "Amatic SC", cursive;
     font-size: 2rem;
     font-weight: 700;
@@ -115,6 +108,24 @@ figure img {
     text-align: center;
     margin: 0;
     width: 100%;
+}
+
+
+.custom-tab {
+    color: #0a322c !important;
+}
+
+.custom-tab:hover {
+    background-color: #ffffff !important;
+    color: #0a322c !important;
+    font-weight: bold;
+}
+
+.custom-tab.active {
+    background-color: #ffffff !important;
+    color: #0a322c !important;
+    font-weight: bold;
+    font-size: 1.2rem;
 }
 
 
@@ -137,6 +148,10 @@ figure img {
     font-weight: 400;
 }
 
+.table td,
+.table th {
+    white-space: nowrap;
+}
 
 @media (max-width: 768px) {
     .display-4 {
