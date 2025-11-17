@@ -24,15 +24,15 @@
                             <ul class="nav nav-pills  py-2" id="tabs-dashboard" style="background:#ffffff;">
                                 <li class="nav-item">
                                     <a class="nav-link custom-tab active" data-toggle="pill"
-                                        href="#custom-tabs-one-home">Usuarios</a>
+                                        href="#custom-tabs-one-home" id="tabUsuariosDashboard">Usuarios</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link custom-tab" data-toggle="pill"
-                                        href="#custom-tabs-one-profile">Habitaciones</a>
+                                    <a class="nav-link custom-tab" data-toggle="pill" href="#custom-tabs-one-profile"
+                                        id="tabHabitacionesDashboard">Habitaciones</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link custom-tab" data-toggle="pill"
-                                        href="#custom-tabs-one-messages">Reservaciones</a>
+                                    <a class="nav-link custom-tab" data-toggle="pill" href="#custom-tabs-one-messages"
+                                        id="tabReservacionesDashboard">Reservaciones</a>
                                 </li>
                             </ul>
                         </div>
@@ -40,7 +40,27 @@
                             <div class="tab-content" id="custom-tabs-one-tabContent">
                                 <div class="tab-pane fade active show" id="custom-tabs-one-home" role="tabpanel"
                                     aria-labelledby="custom-tabs-one-home-tab">
+                                    <div class="container pb-3 d-flex justify-content-start">
+                                        <form class="form-inline">
+                                            <div class="input-group">
+                                                <input class="form-control" type="search" placeholder="Buscar"
+                                                    aria-label="Search" id="buscarUsuarioInput">
+                                                <div class="input-group-append">
+                                                    <button class="btn" id="buscarUsuarioBtn">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <button type="button" class="btn btn-outline-info btn-sm ml-4"
+                                            id="btnBuscarTodosUsuarios"><i class="fas fa-search"></i> Buscar
+                                            todos</button>
+                                        <button type="button" class="btn btn-outline-success btn-sm ml-4"
+                                            id="btnBuscarTodosUsuarios"><i class="fas fa-plus"></i> Agregar
+                                            nuevo</button>
 
+
+                                    </div>
                                     <div class="card shadow-lg p-4 card-personalizada">
                                         <div class="card-header border-0">
                                             <h3 class="card-title">USUARIOS</h3>
@@ -67,30 +87,53 @@
                                                         <th>Borrar</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="tbodyUsuariosDashboard">
                                                     <tr>
                                                         <td>
-                                                            1
                                                         </td>
                                                         <td>
-                                                            nombre ejemplo
-                                                        </td>
-                                                        <td>email@gmail.com</td>
-                                                        <td>
-                                                            pass1234
                                                         </td>
                                                         <td>
-                                                            user
                                                         </td>
                                                         <td>
-                                                            <button class="btn text-success">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
                                                         </td>
                                                         <td>
-                                                            <button class="btn text-danger">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -126,7 +169,7 @@
                                                         <th>Borrar</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="tbodyHabitacionesDashboard">
                                                     <tr>
                                                         <td>
                                                             1
@@ -184,7 +227,7 @@
                                                         <th>Borrar</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="tbodyReservacionesDashboard">
                                                     <tr>
                                                         <td>
                                                             1

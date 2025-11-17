@@ -2,6 +2,7 @@ import { Router } from "./router.js";
 import { initDatePickers } from "./utils/date-init.js";
 import { reservationController } from "./controllers/reservationController.js";
 import { renderizarLoginView, renderizarRegisterView } from "./views/loginView.js";
+import { dashboardController } from "./controllers/dashboardController.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
@@ -15,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     router.addRoute("registro", "pages/register.html");
     router.addRoute("habitaciones", "pages/rooms.html");
 
-
     // 👇 Se ejecuta DESPUÉS de cada carga de vista
     router.onPageLoaded = (path) => {
         // Ejecutar solo en la página de reservas
@@ -26,14 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
         switch (path) {
             case "pages/login.html":
                 renderizarLoginView();
-                break
+                break;
             case "pages/register.html":
                 renderizarRegisterView();
-                break
+                break;
             case "pages/reservations.html":
                 reservationController();
                 break;
-            
+            case "pages/dashboard.html":
+                dashboardController();
+                break;
+
             // CASE PARA CADA CONTROLLER
         }
     };
