@@ -56,10 +56,71 @@
                                             id="btnBuscarTodosUsuarios"><i class="fas fa-search"></i> Buscar
                                             todos</button>
                                         <button type="button" class="btn btn-outline-success btn-sm ml-4"
-                                            id="btnBuscarTodosUsuarios"><i class="fas fa-plus"></i> Agregar
+                                            id="btnAgregarNuevoUsuario" data-toggle="modal"
+                                            data-target="#exampleModal"><i class="fas fa-plus"></i> Agregar
                                             nuevo</button>
 
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModal" tabindex="-1"
+                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">NUEVO USUARIO
+                                                        </h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
 
+                                                        <form id="formNuevoUsuario">
+                                                            <div class="form-group">
+                                                                <label for="nombreNuevoUsuario">Nombre
+                                                                </label>
+                                                                <input type="text" class="form-control"
+                                                                    id="nombreNuevoUsuario" placeholder="Nombre">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="emailNuevoUsuario">Email
+                                                                </label>
+                                                                <input type="email" class="form-control"
+                                                                    id="emailNuevoUsuario"
+                                                                    placeholder="nombre@ejemplo.com">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="passwordNuevoUsuario">Password
+                                                                </label>
+                                                                <input type="password" class="form-control"
+                                                                    id="passwordNuevoUsuario" placeholder="pass123">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="rolNuevoUsuario">Rol</label>
+                                                                <select class="form-control" id="rolNuevoUsuario">
+                                                                    <option>user</option>
+                                                                    <option>admin</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mt-4" id="avisoRellenarCampos">
+                                                                <!-- SE VA A MOSTRAR UN TEXTO EN CASO DE ERROR -->
+                                                            </div>
+                                                        </form>
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal"
+                                                            id="btnCerrarNuevoUsuario">Cerrar</button>
+                                                        <button type="button" class="btn btn-primary"
+                                                            id="btnGuardarNuevoUsuario">Guardar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
                                     </div>
                                     <div class="card shadow-lg p-4 card-personalizada">
                                         <div class="card-header border-0">

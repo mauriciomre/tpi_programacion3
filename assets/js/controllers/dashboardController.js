@@ -1,13 +1,16 @@
 import { userService, roomService, reservationService } from "../services/apiServices.js";
 
 export async function dashboardController() {
-    const usuariosTbody = document.querySelector("#tbodyUsuariosDashboard");
     const habitacionesTbody = document.querySelector("#tbodyHabitacionesDashboard");
     const reservacionesTbody = document.querySelector("#tbodyReservacionesDashboard");
 
+    // ENLAZAR EVENTOS USUARIOS
+    const usuariosTbody = document.querySelector("#tbodyUsuariosDashboard");
     const buscarTodosUsuariosBtn = document.querySelector("#btnBuscarTodosUsuarios");
     const buscarUsuarioInput = document.querySelector("#buscarUsuarioInput");
     const buscarUsuarioBtn = document.querySelector("#buscarUsuarioBtn");
+
+    const guardarNuevoUsuarioBtn = document.querySelector("#btnGuardarNuevoUsuario");
 
     const loaderUsuario = `
                                     <tr>
@@ -81,6 +84,81 @@ export async function dashboardController() {
                                     </tr>
                                     `;
 
+    usuariosTbody.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".btnBorrar");
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const user = await userService.getById(id);
+
+        Swal.fire({
+            title: `Seguro que quiere eliminar al usuario ${user.nombre}?`,
+            showDenyButton: true,
+            confirmButtonText: "Si",
+            denyButtonText: `Cancelar`,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                eliminarUsuario(id);
+                Swal.fire("Eliminado!", "", "success");
+            } else if (result.isDenied) {
+                Swal.fire("El usuario no se eliminó", "", "info");
+            }
+        });
+    });
+
+    async function eliminarUsuario(idUser) {
+        let response = await userService.delete(idUser);
+        await buscarUsuarioBtn.click();
+    }
+
+    guardarNuevoUsuarioBtn.addEventListener("click", async () => {
+        let nombreNuevoUsuarioInput = document.querySelector("#nombreNuevoUsuario");
+        let emailNuevoUsuarioInput = document.querySelector("#emailNuevoUsuario");
+        let passwordNuevoUsuarioInput = document.querySelector("#passwordNuevoUsuario");
+        let rolNuevoUsuarioInput = document.querySelector("#rolNuevoUsuario");
+        let avisoRellenarCamposDiv = document.querySelector("#avisoRellenarCampos");
+        let cerrarNuevoUsuarioBtn = document.querySelector("#btnCerrarNuevoUsuario");
+
+        if (
+            nombreNuevoUsuarioInput.value != "" &&
+            emailNuevoUsuarioInput.value != "" &&
+            passwordNuevoUsuarioInput.value
+        ) {
+            let nuevoUsuario = {
+                nombre: nombreNuevoUsuarioInput.value,
+                email: emailNuevoUsuarioInput.value,
+                password: passwordNuevoUsuarioInput.value,
+                role: rolNuevoUsuarioInput.value,
+            };
+
+            try {
+                let response = await userService.create(nuevoUsuario);
+                avisoRellenarCamposDiv.innerHTML = "";
+                cerrarNuevoUsuarioBtn.click();
+                nombreNuevoUsuarioInput.value = "";
+                emailNuevoUsuarioInput.value = "";
+                passwordNuevoUsuarioInput.value = "";
+                Swal.fire({
+                    icon: "success",
+                    title: "Usuario guardado",
+                    text: "El usuario fue registrado correctamente.",
+                    confirmButtonText: "Aceptar",
+                });
+            } catch (error) {
+                avisoRellenarCamposDiv.innerHTML = `
+                                                    <p class="text-danger"> 
+                                                    * El usuario no pudo guardarse correctamente: ${error}
+                                                    </p>`;
+            }
+        } else {
+            avisoRellenarCamposDiv.innerHTML = `
+                                                    <p class="text-danger"> 
+                                                    * Debe rellenar todos los campos
+                                                                    antes de guardar
+                                                    </p>`;
+        }
+    });
+
     buscarUsuarioBtn.addEventListener("click", async () => {
         usuariosTbody.innerHTML = loaderUsuario;
         if (buscarUsuarioInput.value != "") {
@@ -137,14 +215,12 @@ export async function dashboardController() {
                                             ${user.role}
                                         </td>
                                         <td>
-                                            <button class="btn text-success"
-                                                onclick="editarUsuarioDashboard(${user.id})">
+                                            <button class="btn text-success btnEditar" data-id=${user.id}>
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </td>
                                         <td>
-                                            <button class="btn text-danger"
-                                                onclick="eliminarUsuarioDashboard(${user.id})">
+                                            <button class="btn text-danger btnBorrar" data-id=${user.id}>
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </td>
@@ -153,9 +229,7 @@ export async function dashboardController() {
         });
     }
 
-    async function buscarUsuario(idUser) {}
-
-    async function eliminarUsuario(idUser) {}
+    async function editarUsuario(idUser) {}
 
     // MOSTRAR HABITACIONES
     let allRooms = await roomService.getAll();
