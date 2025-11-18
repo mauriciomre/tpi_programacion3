@@ -84,6 +84,88 @@ export async function dashboardController() {
                                     </tr>
                                     `;
 
+    // EDITAR USUARIO
+    usuariosTbody.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".btnEditar");
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const user = await userService.getById(id);
+
+        Swal.fire({
+            title: "Editar usuario",
+            html: `
+            <form id="formEditarUsuario">
+                <div class="form-group text-start" style="text-align: start;">
+                    <label for="nombreEditarUsuario">Nombre</label>
+                    <input type="text" class="form-control" id="nombreEditarUsuario" value="${user.nombre}">
+                </div>
+
+                <div class="form-group text-start" style="text-align: start;">
+                    <label for="emailEditarUsuario">Email</label>
+                    <input type="email" class="form-control" id="emailEditarUsuario" value="${user.email}">
+                </div>
+
+                <div class="form-group text-start" style="text-align: start;">
+                    <label for="passwordEditarUsuario">Password</label>
+                    <input type="password" class="form-control" id="passwordEditarUsuario" placeholder="Nueva contraseña (opcional)">
+                </div>
+
+                <div class="form-group text-start" style="text-align: start;">
+                    <label for="rolEditarUsuario">Rol</label>
+                    <select class="form-control" id="rolEditarUsuario">
+                        <option value="user" ${user.rol === "user" ? "selected" : ""}>user</option>
+                        <option value="admin" ${user.rol === "admin" ? "selected" : ""}>admin</option>
+                    </select>
+                </div>
+
+                <div class="mt-3 text-danger" id="infoValidacion" style="text-align: start;"></div>
+            </form>
+        `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: "Guardar",
+            cancelButtonText: "Cancelar",
+
+            preConfirm: () => {
+                let nombreInput = document.getElementById("nombreEditarUsuario");
+                let emailInput = document.getElementById("emailEditarUsuario");
+                let passwordInput = document.getElementById("passwordEditarUsuario");
+                let rolInput = document.getElementById("rolEditarUsuario");
+
+                if (nombreInput.value != "" && emailInput.value != "") {
+                    let updateUser = {
+                        nombre: nombreInput.value,
+                        email: emailInput.value,
+                        password: passwordInput.value || user.password,
+                        rol: rolInput.value,
+                    };
+
+                    return updateUser;
+                } else {
+                    document.getElementById("infoValidacion").innerText = "* Nombre y Email son obligatorios";
+                    return false;
+                }
+            },
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    let respuesta = await editarUsuario(id, result.value);
+
+                    Swal.fire("Actualizado!", "El usuario fue editado correctamente", "success");
+                } catch (error) {
+                    Swal.fire("Error", "No se pudo actualizar el usuario", "error");
+                }
+            }
+        });
+    });
+
+    async function editarUsuario(idUser, dataUser) {
+        let response = await userService.update(idUser, dataUser);
+        await buscarUsuarioBtn.click();
+    }
+
+    // BORRAR USUARIO
     usuariosTbody.addEventListener("click", async (e) => {
         const btn = e.target.closest(".btnBorrar");
         if (!btn) return;
@@ -111,6 +193,7 @@ export async function dashboardController() {
         await buscarUsuarioBtn.click();
     }
 
+    // AGREGAR NUEVO USUARIO
     guardarNuevoUsuarioBtn.addEventListener("click", async () => {
         let nombreNuevoUsuarioInput = document.querySelector("#nombreNuevoUsuario");
         let emailNuevoUsuarioInput = document.querySelector("#emailNuevoUsuario");
@@ -159,6 +242,7 @@ export async function dashboardController() {
         }
     });
 
+    // BUSCAR USUARIO POR TEXTO
     buscarUsuarioBtn.addEventListener("click", async () => {
         usuariosTbody.innerHTML = loaderUsuario;
         if (buscarUsuarioInput.value != "") {
@@ -169,6 +253,7 @@ export async function dashboardController() {
         }
     });
 
+    // BUSCAR USUARIOS
     buscarTodosUsuariosBtn.addEventListener("click", async () => {
         usuariosTbody.innerHTML = loaderUsuario;
         let allUsers = await userService.getAll();
@@ -228,8 +313,6 @@ export async function dashboardController() {
         `;
         });
     }
-
-    async function editarUsuario(idUser) {}
 
     // MOSTRAR HABITACIONES
     let allRooms = await roomService.getAll();
