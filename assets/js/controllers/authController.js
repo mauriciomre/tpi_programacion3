@@ -54,6 +54,11 @@ export async function handleRegister(nombre, email, password) {
         return false;
     }
 
+    if (password.length < 6) {
+        alert('La contraseña debe tener al menos 6 caracteres');
+        return false;
+    }
+
     // Se intenta crear user con role USUARIO por defecto
     try {
         const existingUser = await userService.getByEmail(email);
@@ -125,8 +130,9 @@ export async function adminCreateUser(nombre, email, password, role) {
 }
 
 export async function adminChangePassword(idUser, newPassword) {
-    if (newPassword === "") {
-        alert('Debes ingresar una contraseña');
+    
+     if (newPassword === '' || newPassword.length < 6) {
+        alert('La contraseña debe tener al menos 6 caracteres');
         return false;
     }
 

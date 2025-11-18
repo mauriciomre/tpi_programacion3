@@ -637,4 +637,12 @@ export async function dashboardController() {
         let response = await roomService.delete(idRoom);
         await buscarHabitacionBtn.click();
     }
+
+    const logoutBtn = document.querySelector("#logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem('usuarioActual');
+            window.location.href = '#/login';
+        });
+    }
 }
