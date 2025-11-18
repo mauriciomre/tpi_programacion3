@@ -24,23 +24,104 @@
                             <ul class="nav nav-pills  py-2" id="tabs-dashboard" style="background:#ffffff;">
                                 <li class="nav-item">
                                     <a class="nav-link custom-tab active" data-toggle="pill"
-                                        href="#custom-tabs-one-home">Usuarios</a>
+                                        href="#custom-tabs-usuarios" id="tabUsuariosDashboard">Usuarios</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link custom-tab" data-toggle="pill"
-                                        href="#custom-tabs-one-profile">Habitaciones</a>
+                                    <a class="nav-link custom-tab" data-toggle="pill" href="#custom-tabs-habitaciones"
+                                        id="tabHabitacionesDashboard">Habitaciones</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link custom-tab" data-toggle="pill"
-                                        href="#custom-tabs-one-messages">Reservaciones</a>
+                                    <a class="nav-link custom-tab" data-toggle="pill" href="#custom-tabs-reservaciones"
+                                        id="tabReservacionesDashboard">Reservaciones</a>
                                 </li>
                             </ul>
                         </div>
                         <div class="card-body">
                             <div class="tab-content" id="custom-tabs-one-tabContent">
-                                <div class="tab-pane fade active show" id="custom-tabs-one-home" role="tabpanel"
-                                    aria-labelledby="custom-tabs-one-home-tab">
 
+                                <!-- TAB USUARIOS -->
+                                <div class="tab-pane fade active show" id="custom-tabs-usuarios" role="tabpanel"
+                                    aria-labelledby="custom-tabs-one-home-tab">
+                                    <div class="container pb-3 d-flex justify-content-start">
+                                        <form class="form-inline">
+                                            <div class="input-group">
+                                                <input class="form-control" type="search" placeholder="Buscar"
+                                                    aria-label="Search" id="buscarUsuarioInput">
+                                                <div class="input-group-append">
+                                                    <button class="btn" id="buscarUsuarioBtn">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <button type="button" class="btn btn-outline-info btn-sm ml-4"
+                                            id="btnBuscarTodosUsuarios"><i class="fas fa-search"></i> Buscar
+                                            todos</button>
+                                        <button type="button" class="btn btn-outline-success btn-sm ml-4"
+                                            id="btnAgregarNuevoUsuario" data-toggle="modal"
+                                            data-target="#modalNuevoUsuario"><i class="fas fa-plus"></i> Agregar
+                                            nuevo</button>
+
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="modalNuevoUsuario" tabindex="-1"
+                                            aria-labelledby="modalLabelNuevoUsuario" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="modalLabelNuevoUsuario">NUEVO
+                                                            USUARIO
+                                                        </h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+
+                                                        <form id="formNuevoUsuario">
+                                                            <div class="form-group">
+                                                                <label for="nombreNuevoUsuario">Nombre
+                                                                </label>
+                                                                <input type="text" class="form-control"
+                                                                    id="nombreNuevoUsuario" placeholder="Nombre">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="emailNuevoUsuario">Email
+                                                                </label>
+                                                                <input type="email" class="form-control"
+                                                                    id="emailNuevoUsuario"
+                                                                    placeholder="nombre@ejemplo.com">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="passwordNuevoUsuario">Password
+                                                                </label>
+                                                                <input type="password" class="form-control"
+                                                                    id="passwordNuevoUsuario" placeholder="pass123">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="rolNuevoUsuario">Rol</label>
+                                                                <select class="form-control" id="rolNuevoUsuario">
+                                                                    <option>user</option>
+                                                                    <option>admin</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mt-4" id="avisoRellenarCampos">
+                                                                <!-- SE VA A MOSTRAR UN TEXTO EN CASO DE ERROR -->
+                                                            </div>
+                                                        </form>
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal"
+                                                            id="btnCerrarNuevoUsuario">Cerrar</button>
+                                                        <button type="button" class="btn btn-primary"
+                                                            id="btnGuardarNuevoUsuario">Guardar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="card shadow-lg p-4 card-personalizada">
                                         <div class="card-header border-0">
                                             <h3 class="card-title">USUARIOS</h3>
@@ -67,30 +148,53 @@
                                                         <th>Borrar</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="tbodyUsuariosDashboard">
                                                     <tr>
                                                         <td>
-                                                            1
                                                         </td>
                                                         <td>
-                                                            nombre ejemplo
-                                                        </td>
-                                                        <td>email@gmail.com</td>
-                                                        <td>
-                                                            pass1234
                                                         </td>
                                                         <td>
-                                                            user
                                                         </td>
                                                         <td>
-                                                            <button class="btn text-success">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
                                                         </td>
                                                         <td>
-                                                            <button class="btn text-danger">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -99,19 +203,90 @@
                                     </div>
 
                                 </div>
-                                <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel"
-                                    aria-labelledby="custom-tabs-one-profile-tab">
 
-                                    <div class="card">
+                                <!-- TAB HABITACIONES -->
+                                <div class="tab-pane fade" id="custom-tabs-habitaciones" role="tabpanel"
+                                    aria-labelledby="custom-tabs-one-home-tab">
+                                    <div class="container pb-3 d-flex justify-content-start">
+                                        <form class="form-inline">
+                                            <div class="input-group">
+                                                <input class="form-control" type="search" placeholder="Buscar"
+                                                    aria-label="Search" id="buscarHabitacionInput">
+                                                <div class="input-group-append">
+                                                    <button class="btn" id="buscarHabitacionBtn">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <button type="button" class="btn btn-outline-info btn-sm ml-4"
+                                            id="btnBuscarTodasHabitaciones"><i class="fas fa-search"></i> Buscar
+                                            todas</button>
+                                        <button type="button" class="btn btn-outline-success btn-sm ml-4"
+                                            id="btnAgregarNuevaHabitacion" data-toggle="modal"
+                                            data-target="#modalNuevaHabitacion"><i class="fas fa-plus"></i> Agregar
+                                            nueva</button>
+
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="modalNuevaHabitacion" tabindex="-1"
+                                            aria-labelledby="modalLabelNuevaHabitacion" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="modalLabelNuevaHabitacion">NUEVA
+                                                            HABITACIÓN
+                                                        </h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+
+                                                        <form id="formNuevaHabitacion">
+                                                            <div class="form-group">
+                                                                <label for="tipoNuevaHabitacion">Tipo
+                                                                </label>
+                                                                <input type="text" class="form-control"
+                                                                    id="tipoNuevaHabitacion" placeholder="Tipo">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="precioNuevaHabitacion">Precio
+                                                                </label>
+                                                                <input type="number" class="form-control"
+                                                                    id="precioNuevaHabitacion" placeholder="$">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="disponibleNuevaHabitacion">Disponible
+                                                                </label>
+                                                                <select class="form-control"
+                                                                    id="disponibleNuevaHabitacion">
+                                                                    <option value="true">Disponible</option>
+                                                                    <option value="false">No disponible</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mt-4" id="infoValidateNewRoom">
+                                                                <!-- SE VA A MOSTRAR UN TEXTO EN CASO DE ERROR -->
+                                                            </div>
+                                                        </form>
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal"
+                                                            id="btnCerrarNuevaHabitacion">Cerrar</button>
+                                                        <button type="button" class="btn btn-primary"
+                                                            id="btnGuardarNuevaHabitacion">Guardar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card shadow-lg p-4 card-personalizada">
                                         <div class="card-header border-0">
                                             <h3 class="card-title">HABITACIONES</h3>
+
                                             <div class="card-tools">
-                                                <!-- <a href="#" class="btn btn-tool btn-sm">
-                                        <i class="fas fa-download"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-tool btn-sm">
-                                        <i class="fas fa-bars"></i>
-                                    </a> -->
                                             </div>
                                         </div>
                                         <div class="card-body table-responsive p-0">
@@ -126,36 +301,56 @@
                                                         <th>Borrar</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="tbodyHabitacionesDashboard">
                                                     <tr>
                                                         <td>
-                                                            1
-                                                        </td>
-                                                        <td>Doble</td>
-                                                        <td>
-                                                            $1500
                                                         </td>
                                                         <td>
-                                                            No disponible
                                                         </td>
                                                         <td>
-                                                            <button class="btn text-success">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
                                                         </td>
                                                         <td>
-                                                            <button class="btn text-danger">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
+                                                        </td>
+                                                        <td>
                                                         </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
-
                                 </div>
-                                <div class="tab-pane fade" id="custom-tabs-one-messages" role="tabpanel"
+
+                                <div class="tab-pane fade" id="custom-tabs-reservaciones" role="tabpanel"
                                     aria-labelledby="custom-tabs-one-messages-tab">
 
                                     <div class="card">
@@ -184,7 +379,7 @@
                                                         <th>Borrar</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="tbodyReservacionesDashboard">
                                                     <tr>
                                                         <td>
                                                             1

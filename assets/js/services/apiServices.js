@@ -9,9 +9,9 @@ const API_BASE_URL_2 = "https://6914ead03746c71fe04a079f.mockapi.io"; // reserva
 // FUNCIONES AUXILIARES
 // ==============================================
 
-/**
- * Maneja los errores de las peticiones HTTP
- */
+
+ // Maneja los errores de las peticiones HTTP
+ 
 const handleResponse = async (response) => {
     if (!response.ok) {
         const error = await response.text();
@@ -47,23 +47,20 @@ const request = async (baseUrl, endpoint, options = {}) => {
 // ==============================================
 
 export const userService = {
-    /**
-     * Obtiene todos los usuarios
-     */
+    //Obtiene todos los usuarios
+    
     getAll: async () => {
         return await request(API_BASE_URL_1, "/users");
     },
 
-    /**
-     * Obtiene un usuario por ID
-     */
+     //Obtiene un usuario por ID
+
     getById: async (id) => {
         return await request(API_BASE_URL_1, `/users/${id}`);
     },
 
-    /**
-     * Busca un usuario por email
-     */
+    //Busca un usuario por email
+     
     getByEmail: async (email) => {
         const users = await request(API_BASE_URL_1, "/users");
         const found = users.find((user) => user.email === email);
@@ -71,9 +68,8 @@ export const userService = {
         return found || null;
     },
 
-    /**
-     * Crea un nuevo usuario
-     */
+     //Crea un nuevo usuario
+     
     create: async (userData) => {
         return await request(API_BASE_URL_1, "/users", {
             method: "POST",
@@ -81,9 +77,9 @@ export const userService = {
         });
     },
 
-    /**
-     * Actualiza un usuario existente
-     */
+    
+    //Actualiza un usuario existente
+    
     update: async (id, userData) => {
         return await request(API_BASE_URL_1, `/users/${id}`, {
             method: "PUT",
@@ -91,18 +87,16 @@ export const userService = {
         });
     },
 
-    /**
-     * Elimina un usuario
-     */
+    //Elimina un usuario
+     
     delete: async (id) => {
         return await request(API_BASE_URL_1, `/users/${id}`, {
             method: "DELETE",
         });
     },
 
-    /**
-     * Cambia la contraseña de un usuario
-     */
+    //Cambia la contraseña de un usuario
+     
     changePassword: async (id, newPassword) => {
         return await request(API_BASE_URL_1, `/users/${id}`, {
             method: "PUT",
@@ -116,31 +110,27 @@ export const userService = {
 // ==============================================
 
 export const roomService = {
-    /**
-     * Obtiene todas las habitaciones
-     */
+   ///Obtiene todas las habitaciones
+     
     getAll: async () => {
         return await request(API_BASE_URL_1, "/rooms");
     },
 
-    /**
-     * Obtiene habitaciones disponibles
-     */
+   ///Obtiene habitaciones disponibles
+     
     getAvailable: async () => {
         const rooms = await request(API_BASE_URL_1, "/rooms");
         return rooms.filter((room) => room.disponible === true);
     },
 
-    /**
-     * Obtiene una habitación por ID
-     */
+    // Obtiene una habitación por ID
+     
     getById: async (id) => {
         return await request(API_BASE_URL_1, `/rooms/${id}`);
     },
 
-    /**
-     * Crea una nueva habitación
-     */
+    // Crea una nueva habitación
+     
     create: async (roomData) => {
         return await request(API_BASE_URL_1, "/rooms", {
             method: "POST",
@@ -148,9 +138,8 @@ export const roomService = {
         });
     },
 
-    /**
-     * Actualiza una habitación existente
-     */
+    // Actualiza una habitación existente
+     
     update: async (id, roomData) => {
         return await request(API_BASE_URL_1, `/rooms/${id}`, {
             method: "PUT",
@@ -158,18 +147,16 @@ export const roomService = {
         });
     },
 
-    /**
-     * Elimina una habitación
-     */
+    // Elimina una habitación
+     
     delete: async (id) => {
         return await request(API_BASE_URL_1, `/rooms/${id}`, {
             method: "DELETE",
         });
     },
 
-    /**
-     * Cambia la disponibilidad de una habitación
-     */
+    // Cambia la disponibilidad de una habitación
+     
     toggleAvailability: async (id, disponible) => {
         return await request(API_BASE_URL_1, `/rooms/${id}`, {
             method: "PUT",
@@ -183,39 +170,34 @@ export const roomService = {
 // ==============================================
 
 export const reservationService = {
-    /**
-     * Obtiene todas las reservas
-     */
+    // Obtiene todas las reservas
+     
     getAll: async () => {
         return await request(API_BASE_URL_2, "/reservations");
     },
 
-    /**
-     * Obtiene una reserva por ID
-     */
+    // Obtiene una reserva por ID
+     
     getById: async (id) => {
         return await request(API_BASE_URL_2, `/reservations/${id}`);
     },
 
-    /**
-     * Obtiene reservas de un usuario específico
-     */
+    // Obtiene reservas de un usuario específico
+     
     getByUserId: async (userId) => {
         const reservations = await request(API_BASE_URL_2, "/reservations");
         return reservations.filter((res) => res.userId === userId);
     },
 
-    /**
-     * Obtiene reservas de una habitación específica
-     */
+    // Obtiene reservas de una habitación específica
+     
     getByRoomId: async (roomId) => {
         const reservations = await request(API_BASE_URL_2, "/reservations");
         return reservations.filter((res) => res.roomId === roomId);
     },
 
-    /**
-     * Crea una nueva reserva
-     */
+    // Crea una nueva reserva
+     
     create: async (reservationData) => {
         return await request(API_BASE_URL_2, "/reservations", {
             method: "POST",
@@ -226,9 +208,8 @@ export const reservationService = {
         });
     },
 
-    /**
-     * Actualiza una reserva existente
-     */
+    // Actualiza una reserva existente
+     
     update: async (id, reservationData) => {
         return await request(API_BASE_URL_2, `/reservations/${id}`, {
             method: "PUT",
@@ -236,9 +217,8 @@ export const reservationService = {
         });
     },
 
-    /**
-     * Cambia el estado de una reserva
-     */
+    // Cambia el estado de una reserva
+     
     changeStatus: async (id, estado) => {
         return await request(API_BASE_URL_2, `/reservations/${id}`, {
             method: "PUT",
@@ -246,9 +226,8 @@ export const reservationService = {
         });
     },
 
-    /**
-     * Cancela una reserva (cambia estado a "cancelada")
-     */
+    // Cancela una reserva (cambia estado a "cancelada")
+     
     cancel: async (id) => {
         return await request(API_BASE_URL_2, `/reservations/${id}`, {
             method: "PUT",
@@ -256,35 +235,15 @@ export const reservationService = {
         });
     },
 
-    /**
-     * Elimina una reserva
-     */
+    // Elimina una reserva
+     
     delete: async (id) => {
         return await request(API_BASE_URL_2, `/reservations/${id}`, {
             method: "DELETE",
         });
     },
 
-    /**
-     * Obtiene estadísticas de reservas por estado
-     */
-    getStatsByStatus: async () => {
-        const reservations = await request(API_BASE_URL_2, "/reservations");
-        const stats = {
-            pendiente: 0,
-            confirmada: 0,
-            cancelada: 0,
-            completada: 0,
-        };
-
-        reservations.forEach((res) => {
-            if (stats.hasOwnProperty(res.estado)) {
-                stats[res.estado]++;
-            }
-        });
-
-        return stats;
-    },
+    
 };
 
 // ==============================================

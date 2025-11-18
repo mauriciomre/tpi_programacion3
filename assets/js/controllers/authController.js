@@ -1,13 +1,3 @@
-// src/controllers/authController.js
-
-/*
-
-    const user = new User(data); // creás la instancia de la clase
-    localStorage.setItem("user", JSON.stringify(user));
-    alert(`Bienvenido ${user.nombre}`);
-}
-*/
-
 import { userService } from "../services/apiServices.js";
 import { saveUser } from "../services/storageService.js";
 
@@ -32,7 +22,7 @@ export async function handleLogin(email, password) {
         }
 
         if (user.password !== password) {
-            alert("Contrasenia Incorrecta");
+            alert("Contraseña Incorrecta");
             return false;
         }
         // login exitoso

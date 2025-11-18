@@ -32,13 +32,11 @@
     font-family: "Amatic SC", cursive;
     font-size: 4rem;
     font-weight: 400;
-
 }
 
 .hero p {
     font-family: "Raleway";
 }
-
 
 .hero-content {
     position: relative;
@@ -77,7 +75,6 @@
     background-color: #eab034 !important;
     border-color: #eab034 !important;
     color: #0a322c !important;
-
 }
 
 .card-personalizada {
@@ -86,7 +83,6 @@
     border-radius: 12px;
     border: none;
     box-shadow: #0a322c;
-
 }
 
 .card-personalizada .card-header {
@@ -106,7 +102,6 @@
     width: 100%;
 }
 
-
 .custom-tab {
     color: #0a322c !important;
 }
@@ -123,8 +118,6 @@
     font-weight: bold;
     font-size: 1.2rem;
 }
-
-
 
 .text-primary-custom {
     color: #eab034 !important;
@@ -147,6 +140,27 @@
 .table td,
 .table th {
     white-space: nowrap;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+    width: 50px;
+    padding: 8px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #a7a8a8;
+    --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+    -webkit-mask: var(--_m);
+    mask: var(--_m);
+    -webkit-mask-composite: source-out;
+    mask-composite: subtract;
+    animation: l3 1s infinite linear;
+}
+
+@keyframes l3 {
+    to {
+        transform: rotate(1turn);
+    }
 }
 
 @media (max-width: 768px) {

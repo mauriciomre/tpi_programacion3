@@ -12,7 +12,7 @@ export function renderizarLoginView() {
         if (user.role === 'ADMIN') {
             window.location.href = '#/dashboard';
         } else {
-            window.location.href = '#/habitaciones';
+            window.location.href = '#/reservations';
         }
         return;
     }
@@ -39,7 +39,7 @@ export function renderizarRegisterView(){
         if (user.role === 'ADMIN') {
             window.location.href = '#/dashboard';
         } else {
-            window.location.href = '#/habitaciones';
+            window.location.href = '#/reservations';
         }
         return;
     }
