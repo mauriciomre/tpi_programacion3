@@ -1,4 +1,4 @@
-//MODIFICAR EL MOCKAPI EL TIPO DE DATO DE ROLE (ACTUALMENTE ESTA DANDO BOOLEANO y tiene de dar STRING: USUARIO o ADMIN)
+//MODIFICAR EL MOCKAPI EL TIPO DE DATO DE ROLE (tiene de dar STRING: USUARIO o ADMIN)
 
 //Usuario en el navegador
 const STORAGE_KEY = 'usuarioActual';
@@ -31,7 +31,7 @@ export function esAdmin() {
     if (user === null) {
         return false;
     }
-    return user.role === 'admin';
+    return user.role === 'ADMIN';
 }
 
 //UTILIZANDO WINDOW BOM (verificar)(verificar)(verificar)
@@ -60,7 +60,7 @@ export function requiereAdmin(){
     }
     if (!isAdmin()) {
         alert('No tienes permisos de administrador');
-        window.location.href = '#/';
+        window.location.href = '#/reservations';
         return false;
     }
     return true;
