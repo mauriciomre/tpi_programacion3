@@ -56,13 +56,13 @@
     font-family: "Amatic SC", cursive;
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
     background: #0a322c;
-    padding: 35px;
+    padding: 1rem;
     margin: 0;
 }
 
 .carousel-caption {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    font-size: 1.3rem;
+    font-size: 1rem;
 
 }
 
@@ -87,10 +87,6 @@
     border: none;
     box-shadow: #0a322c;
 
-}
-
-.carousel-slider {
-    margin: 0;
 }
 
 .card-personalizada .card-header {
