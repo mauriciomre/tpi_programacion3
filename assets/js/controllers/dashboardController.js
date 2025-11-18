@@ -158,6 +158,17 @@ export async function dashboardController() {
     }
 
     // AGREGAR NUEVO USUARIO
+
+    async function validarEmailUnico(email) {
+        let allUsers = await userService.getAll();
+
+        let encontrado = allUsers.some((user) => user.email.toLowerCase() == email.toLowerCase());
+
+        console.log(encontrado);
+
+        return !encontrado;
+    }
+
     guardarNuevoUsuarioBtn.addEventListener("click", async () => {
         let nombreNuevoUsuarioInput = document.querySelector("#nombreNuevoUsuario");
         let emailNuevoUsuarioInput = document.querySelector("#emailNuevoUsuario");
@@ -171,32 +182,39 @@ export async function dashboardController() {
             emailNuevoUsuarioInput.value != "" &&
             passwordNuevoUsuarioInput.value
         ) {
-            let nuevoUsuario = {
-                nombre: nombreNuevoUsuarioInput.value,
-                email: emailNuevoUsuarioInput.value,
-                password: passwordNuevoUsuarioInput.value,
-                role: rolNuevoUsuarioInput.value,
-            };
+            if (await validarEmailUnico(emailNuevoUsuarioInput.value)) {
+                let nuevoUsuario = {
+                    nombre: nombreNuevoUsuarioInput.value,
+                    email: emailNuevoUsuarioInput.value,
+                    password: passwordNuevoUsuarioInput.value,
+                    role: rolNuevoUsuarioInput.value,
+                };
 
-            try {
-                let response = await userService.create(nuevoUsuario);
-                avisoRellenarCamposDiv.innerHTML = "";
-                cerrarNuevoUsuarioBtn.click();
-                nombreNuevoUsuarioInput.value = "";
-                emailNuevoUsuarioInput.value = "";
-                passwordNuevoUsuarioInput.value = "";
-                Swal.fire({
-                    icon: "success",
-                    title: "Usuario guardado",
-                    text: "El usuario fue registrado correctamente.",
-                    confirmButtonText: "Aceptar",
-                });
+                try {
+                    await userService.create(nuevoUsuario);
+                    avisoRellenarCamposDiv.innerHTML = "";
+                    cerrarNuevoUsuarioBtn.click();
+                    nombreNuevoUsuarioInput.value = "";
+                    emailNuevoUsuarioInput.value = "";
+                    passwordNuevoUsuarioInput.value = "";
+                    Swal.fire({
+                        icon: "success",
+                        title: "Usuario guardado",
+                        text: "El usuario fue registrado correctamente.",
+                        confirmButtonText: "Aceptar",
+                    });
 
-                await buscarUsuarioBtn.click();
-            } catch (error) {
+                    await buscarUsuarioBtn.click();
+                } catch (error) {
+                    avisoRellenarCamposDiv.innerHTML = `
+                                                        <p class="text-danger"> 
+                                                        * El usuario no pudo guardarse correctamente: ${error}
+                                                        </p>`;
+                }
+            } else {
                 avisoRellenarCamposDiv.innerHTML = `
                                                     <p class="text-danger"> 
-                                                    * El usuario no pudo guardarse correctamente: ${error}
+                                                    * El Email ingresado ya existe
                                                     </p>`;
             }
         } else {
@@ -251,21 +269,26 @@ export async function dashboardController() {
             confirmButtonText: "Guardar",
             cancelButtonText: "Cancelar",
 
-            preConfirm: () => {
+            preConfirm: async () => {
                 let nombreInput = document.getElementById("nombreEditarUsuario");
                 let emailInput = document.getElementById("emailEditarUsuario");
                 let passwordInput = document.getElementById("passwordEditarUsuario");
                 let rolInput = document.getElementById("rolEditarUsuario");
 
                 if (nombreInput.value != "" && emailInput.value != "") {
-                    let updateUser = {
-                        nombre: nombreInput.value,
-                        email: emailInput.value,
-                        password: passwordInput.value || user.password,
-                        rol: rolInput.value,
-                    };
+                    if (await validarEmailUnico(emailInput.value)) {
+                        let updateUser = {
+                            nombre: nombreInput.value,
+                            email: emailInput.value,
+                            password: passwordInput.value || user.password,
+                            rol: rolInput.value,
+                        };
 
-                    return updateUser;
+                        return updateUser;
+                    } else {
+                        document.getElementById("infoValidacion").innerText = "* El Email ingresado ya existe";
+                        return false;
+                    }
                 } else {
                     document.getElementById("infoValidacion").innerText = "* Nombre y Email son obligatorios";
                     return false;
@@ -274,7 +297,7 @@ export async function dashboardController() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    let respuesta = await editarUsuario(id, result.value);
+                    editarUsuario(id, result.value);
 
                     Swal.fire("Actualizado!", "El usuario fue editado correctamente", "success");
                 } catch (error) {
