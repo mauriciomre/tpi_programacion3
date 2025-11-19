@@ -1,6 +1,14 @@
 import { userService, roomService, reservationService } from "../services/apiServices.js";
 
 export async function dashboardController() {
+    const logoutBtn = document.querySelector("#logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("usuarioActual");
+            window.location.href = "#/login";
+        });
+    }
+
     // --- TAB USUARIOS ---
 
     // ENLAZAR ELEMENTOS USUARIOS
@@ -183,7 +191,7 @@ export async function dashboardController() {
             if (await validarEmailUnico(emailNuevoUsuarioInput.value)) {
                 let nuevoUsuario = {
                     nombre: nombreNuevoUsuarioInput.value,
-                    email: emailNuevoUsuarioInput.value,
+                    email: emailNuevoUsuarioInput.value.toLowerCase(),
                     password: passwordNuevoUsuarioInput.value,
                     role: rolNuevoUsuarioInput.value,
                 };
@@ -254,8 +262,8 @@ export async function dashboardController() {
                 <div class="form-group text-start" style="text-align: start;">
                     <label for="rolEditarUsuario">Rol</label>
                     <select class="form-control" id="rolEditarUsuario">
-                        <option value="user" ${user.rol === "user" ? "selected" : ""}>user</option>
-                        <option value="admin" ${user.rol === "admin" ? "selected" : ""}>admin</option>
+                        <option value="user" ${user.role === "user" ? "selected" : ""}>user</option>
+                        <option value="admin" ${user.role === "admin" ? "selected" : ""}>admin</option>
                     </select>
                 </div>
 
@@ -271,16 +279,21 @@ export async function dashboardController() {
                 let nombreInput = document.getElementById("nombreEditarUsuario");
                 let emailInput = document.getElementById("emailEditarUsuario");
                 let passwordInput = document.getElementById("passwordEditarUsuario");
-                let rolInput = document.getElementById("rolEditarUsuario");
+                let roleInput = document.getElementById("rolEditarUsuario");
 
                 if (nombreInput.value != "" && emailInput.value != "") {
-                    if (await validarEmailUnico(emailInput.value)) {
+                    if (
+                        (await validarEmailUnico(emailInput.value)) ||
+                        emailInput.value.toLowerCase() == user.email.toLowerCase()
+                    ) {
                         let updateUser = {
                             nombre: nombreInput.value,
                             email: emailInput.value,
                             password: passwordInput.value || user.password,
-                            rol: rolInput.value,
+                            role: roleInput.value,
                         };
+
+                        console.log(updateUser);
 
                         return updateUser;
                     } else {
@@ -636,14 +649,6 @@ export async function dashboardController() {
         await buscarHabitacionBtn.click();
     }
 
-    const logoutBtn = document.querySelector("#logoutBtn");
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-            localStorage.removeItem("usuarioActual");
-            window.location.href = "#/login";
-        });
-    }
-
     // --- TAB RESERVACIONES ---
 
     // ENLAZAR ELEMENTOS RESERVACIONES
@@ -651,49 +656,53 @@ export async function dashboardController() {
     const buscarTodasReservasBtn = document.querySelector("#btnBuscarTodasReservas");
     const buscarReservaInput = document.querySelector("#buscarReservaInput");
     const buscarReservaBtn = document.querySelector("#buscarReservaBtn");
+    const agregarNuevaReservaBtn = document.querySelector("#btnAgregarNuevaReserva");
     const guardarNuevaReservaBtn = document.querySelector("#btnGuardarNuevaReserva");
     const infoValidateNewReserva = document.querySelector("#infoValidateNewReserva");
     const cerrarNuevaReservaBtn = document.querySelector("#btnCerrarNuevaReserva");
 
     const loaderReserva = `
-<tr>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-</tr>
-<tr>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-<td><div class="loader"></div></td>
-</tr>
-`;
+                            <tr>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            </tr>
+                            <tr>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            </tr>
+                            <tr>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            <td><div class="loader"></div></td>
+                            </tr>
+                            `;
 
+    // MOSTRAR RESERVACIONES
     async function mostrarReservaciones(reservas) {
         reservacionesTbody.innerHTML = "";
         reservas.forEach((res) => {
             reservacionesTbody.innerHTML += `
         <tr>
             <td>${res.id}</td>
-            <td>${res.usuario}</td>
-            <td>${res.habitacion}</td>
+            <td>${res.userId}</td>
+            <td>${res.roomId}</td>
             <td>${res.checkIn}</td>
             <td>${res.checkOut}</td>
             <td>${res.estado}</td>
-            <td>
-                <button class="btn text-success btnEditarReserva" data-id=${res.id}>
-                    <i class="fas fa-edit"></i>
-                </button>
-            </td>
             <td>
                 <button class="btn text-danger btnBorrarReserva" data-id=${res.id}>
                     <i class="fas fa-trash"></i>
@@ -728,137 +737,142 @@ export async function dashboardController() {
         mostrarReservaciones(todas);
     });
 
-    guardarNuevaReservaBtn.addEventListener("click", async () => {
-        let usuarioNuevaReserva = document.querySelector("#usuarioNuevaReserva");
-        let habitacionNuevaReserva = document.querySelector("#habitacionNuevaReserva");
-        let checkInNuevaReserva = document.querySelector("#checkInNuevaReserva");
-        let checkOutNuevaReserva = document.querySelector("#checkOutNuevaReserva");
-        let estadoNuevaReserva = document.querySelector("#estadoNuevaReserva");
+    // AGREGAR RESERVACION
+    const usuarioNuevaReserva = document.querySelector("#usuarioNuevaReserva");
+    const checkInNuevaReserva = document.querySelector("#checkInNuevaReserva");
+    const checkOutNuevaReserva = document.querySelector("#checkOutNuevaReserva");
+    const habitacionNuevaReserva = document.querySelector("#habitacionNuevaReserva");
+    const estadoNuevaReserva = document.querySelector("#estadoNuevaReserva");
 
+    agregarNuevaReservaBtn.addEventListener("click", async () => {
+        usuarioNuevaReserva.innerHTML = ``;
+        let allUsers = await userService.getAll();
+        allUsers.forEach((user) => {
+            usuarioNuevaReserva.innerHTML += `<option value="${user.id}">${user.nombre} (${user.id}) - ${user.email}</option>`;
+        });
+
+        checkInNuevaReserva.value = "";
+        checkOutNuevaReserva.value = "";
         infoValidateNewReserva.innerHTML = "";
+        await cargarHabitacionesDisponibles();
+    });
 
-        if (
-            usuarioNuevaReserva.value != "" &&
-            habitacionNuevaReserva.value != "" &&
-            checkInNuevaReserva.value != "" &&
-            checkOutNuevaReserva.value != ""
-        ) {
-            let nuevaReserva = {
-                usuario: usuarioNuevaReserva.value,
-                habitacion: parseInt(habitacionNuevaReserva.value),
-                checkIn: checkInNuevaReserva.value,
-                checkOut: checkOutNuevaReserva.value,
-                estado: estadoNuevaReserva.value,
-            };
+    checkInNuevaReserva.addEventListener("change", () => {
+        cargarHabitacionesDisponibles();
+    });
 
-            try {
-                await reservationService.create(nuevaReserva);
-                infoValidateNewReserva.innerHTML = "";
-                cerrarNuevaReservaBtn.click();
+    checkOutNuevaReserva.addEventListener("change", () => {
+        cargarHabitacionesDisponibles();
+    });
 
-                usuarioNuevaReserva.value = "";
-                habitacionNuevaReserva.value = "";
-                checkInNuevaReserva.value = "";
-                checkOutNuevaReserva.value = "";
+    async function cargarHabitacionesDisponibles() {
+        let checkIn = checkInNuevaReserva.value;
+        let checkOut = checkOutNuevaReserva.value;
 
-                Swal.fire({
-                    icon: "success",
-                    title: "Reservación guardada",
-                    text: "La reservación fue registrada correctamente.",
-                    confirmButtonText: "Aceptar",
+        habitacionNuevaReserva.innerHTML = "";
+
+        if (!checkIn || !checkOut || checkIn == "" || checkOut == "") {
+            habitacionNuevaReserva.innerHTML = `<option value="">Seleccione fechas primero...</option>`;
+            return;
+        }
+
+        if (checkIn >= checkOut) {
+            infoValidateNewReserva.innerHTML = `<p class="text-danger">* El check-out debe ser posterior al check-in</p>`;
+            return;
+        } else {
+            infoValidateNewReserva.innerHTML = "";
+        }
+
+        let habitaciones = await roomService.getAll();
+        let reservas = await reservationService.getAll();
+
+        let disponibles = habitaciones.filter((hab) => {
+            if (hab.disponible) {
+                let reservada = reservas.some((res) => {
+                    if (parseInt(res.roomId) != parseInt(hab.id)) return false;
+
+                    let resIn = new Date(res.checkIn);
+                    let resOut = new Date(res.checkOut);
+                    let inDate = new Date(checkIn);
+                    let outDate = new Date(checkOut);
+
+                    let seSolapan = !(outDate <= resIn || inDate >= resOut);
+
+                    return seSolapan;
                 });
 
-                await buscarReservaBtn.click();
-            } catch (error) {
-                infoValidateNewReserva.innerHTML = `
-            <p class="text-danger"> 
-            * La reservación no pudo guardarse correctamente: ${error}
-            </p>`;
+                return !reservada;
+            } else {
+                return false;
             }
-        } else {
+        });
+
+        if (disponibles.length === 0) {
+            habitacionNuevaReserva.innerHTML = `<option value="">No hay habitaciones disponibles</option>`;
+            return;
+        }
+
+        habitacionNuevaReserva.innerHTML = `<option value="">Seleccione una habitación...</option>`;
+
+        disponibles.forEach((h) => {
+            habitacionNuevaReserva.innerHTML += `
+            <option value="${h.id}">
+                Habitación ${h.id} - ${h.tipo} - $${h.precio}/noche
+            </option>
+        `;
+        });
+    }
+
+    guardarNuevaReservaBtn.addEventListener("click", async () => {
+        if (
+            usuarioNuevaReserva.value === "" ||
+            habitacionNuevaReserva.value === "" ||
+            checkInNuevaReserva.value === "" ||
+            checkOutNuevaReserva.value === ""
+        ) {
             infoValidateNewReserva.innerHTML = `
-        <p class="text-danger"> 
-        * Debe rellenar todos los campos antes de guardar
-        </p>`;
+            <p class="text-danger">* Debe completar todos los campos</p>
+        `;
+            return;
+        }
+
+        if (checkInNuevaReserva.value >= checkOutNuevaReserva.value) {
+            infoValidateNewReserva.innerHTML = `
+            <p class="text-danger">* La fecha de salida debe ser mayor a la de entrada</p>
+        `;
+            return;
+        }
+
+        let nuevaReserva = {
+            userId: parseInt(usuarioNuevaReserva.value),
+            roomId: parseInt(habitacionNuevaReserva.value),
+            checkIn: checkInNuevaReserva.value,
+            checkOut: checkOutNuevaReserva.value,
+            estado: estadoNuevaReserva.value,
+        };
+
+        try {
+            await reservationService.create(nuevaReserva);
+
+            infoValidateNewReserva.innerHTML = "";
+
+            Swal.fire({
+                icon: "success",
+                title: "Reservación guardada",
+                text: "La reservación fue registrada correctamente.",
+                confirmButtonText: "Aceptar",
+            });
+
+            buscarReservaBtn.click();
+            cerrarNuevaReservaBtn.click();
+        } catch (err) {
+            infoValidateNewReserva.innerHTML = `
+            <p class="text-danger">* Error al guardar la reservación: ${err}</p>
+        `;
         }
     });
 
-    reservacionesTbody.addEventListener("click", async (e) => {
-        const btn = e.target.closest(".btnEditarReserva");
-        if (!btn) return;
-
-        const id = btn.dataset.id;
-        const reserva = await reservationService.getById(id);
-
-        Swal.fire({
-            title: "Editar reservación",
-            html: `
-        <form id="formEditarReserva">
-            <div class="form-group text-start">
-                <label>Usuario</label>
-                <input type="text" class="form-control" id="usuarioEditarReserva" value="${reserva.usuario}">
-            </div>
-            <div class="form-group text-start">
-                <label>Habitación</label>
-                <input type="number" class="form-control" id="habitacionEditarReserva" value="${reserva.habitacion}">
-            </div>
-            <div class="form-group text-start">
-                <label>Check In</label>
-                <input type="date" class="form-control" id="checkInEditarReserva" value="${reserva.checkIn}">
-            </div>
-            <div class="form-group text-start">
-                <label>Check Out</label>
-                <input type="date" class="form-control" id="checkOutEditarReserva" value="${reserva.checkOut}">
-            </div>
-            <div class="form-group text-start">
-                <label>Estado</label>
-                <select class="form-control" id="estadoEditarReserva">
-                    <option value="pendiente" ${reserva.estado == "pendiente" ? "selected" : ""}>Pendiente</option>
-                    <option value="confirmado" ${reserva.estado == "confirmado" ? "selected" : ""}>Confirmado</option>
-                    <option value="cancelado" ${reserva.estado == "cancelado" ? "selected" : ""}>Cancelado</option>
-                </select>
-            </div>
-            <div class="mt-3 text-danger" id="infoValidateEditReserva"></div>
-        </form>
-        `,
-            showCancelButton: true,
-            confirmButtonText: "Guardar",
-            cancelButtonText: "Cancelar",
-
-            preConfirm: () => {
-                let usuario = document.getElementById("usuarioEditarReserva").value;
-                let habitacion = document.getElementById("habitacionEditarReserva").value;
-                let checkIn = document.getElementById("checkInEditarReserva").value;
-                let checkOut = document.getElementById("checkOutEditarReserva").value;
-                let estado = document.getElementById("estadoEditarReserva").value;
-
-                if (!usuario || !habitacion || !checkIn || !checkOut) {
-                    document.getElementById("infoValidateEditReserva").innerText =
-                        "* Todos los campos son obligatorios";
-                    return false;
-                }
-
-                return {
-                    usuario,
-                    habitacion: parseInt(habitacion),
-                    checkIn,
-                    checkOut,
-                    estado,
-                };
-            },
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    await reservationService.update(id, result.value);
-                    Swal.fire("Actualizado!", "La reservación se editó correctamente", "success");
-                    buscarReservaBtn.click();
-                } catch (error) {
-                    Swal.fire("Error", "No se pudo actualizar la reservación", "error");
-                }
-            }
-        });
-    });
-
+    // ELIMINAR RESERVA
     reservacionesTbody.addEventListener("click", async (e) => {
         const btn = e.target.closest(".btnBorrarReserva");
         if (!btn) return;
