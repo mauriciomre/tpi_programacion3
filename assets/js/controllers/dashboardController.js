@@ -1,11 +1,9 @@
 import { userService, roomService, reservationService } from "../services/apiServices.js";
 
 export async function dashboardController() {
-    const reservacionesTbody = document.querySelector("#tbodyReservacionesDashboard");
-
     // --- TAB USUARIOS ---
 
-    // ENLAZAR EVENTOS USUARIOS
+    // ENLAZAR ELEMENTOS USUARIOS
     const usuariosTbody = document.querySelector("#tbodyUsuariosDashboard");
     const buscarTodosUsuariosBtn = document.querySelector("#btnBuscarTodosUsuarios");
     const buscarUsuarioInput = document.querySelector("#buscarUsuarioInput");
@@ -342,7 +340,7 @@ export async function dashboardController() {
 
     // --- TAB HABITACIONES ---
 
-    // ENLAZAR EVENTOS HABITACIONES
+    // ENLAZAR ELEMENTOS HABITACIONES
 
     const habitacionesTbody = document.querySelector("#tbodyHabitacionesDashboard");
     const buscarTodasHabitacionesBtn = document.querySelector("#btnBuscarTodasHabitaciones");
@@ -641,8 +639,244 @@ export async function dashboardController() {
     const logoutBtn = document.querySelector("#logoutBtn");
     if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
-            localStorage.removeItem('usuarioActual');
-            window.location.href = '#/login';
+            localStorage.removeItem("usuarioActual");
+            window.location.href = "#/login";
         });
     }
+
+    // --- TAB RESERVACIONES ---
+
+    // ENLAZAR ELEMENTOS RESERVACIONES
+    const reservacionesTbody = document.querySelector("#tbodyReservacionesDashboard");
+    const buscarTodasReservasBtn = document.querySelector("#btnBuscarTodasReservas");
+    const buscarReservaInput = document.querySelector("#buscarReservaInput");
+    const buscarReservaBtn = document.querySelector("#buscarReservaBtn");
+    const guardarNuevaReservaBtn = document.querySelector("#btnGuardarNuevaReserva");
+    const infoValidateNewReserva = document.querySelector("#infoValidateNewReserva");
+    const cerrarNuevaReservaBtn = document.querySelector("#btnCerrarNuevaReserva");
+
+    const loaderReserva = `
+<tr>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+</tr>
+<tr>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+<td><div class="loader"></div></td>
+</tr>
+`;
+
+    async function mostrarReservaciones(reservas) {
+        reservacionesTbody.innerHTML = "";
+        reservas.forEach((res) => {
+            reservacionesTbody.innerHTML += `
+        <tr>
+            <td>${res.id}</td>
+            <td>${res.usuario}</td>
+            <td>${res.habitacion}</td>
+            <td>${res.checkIn}</td>
+            <td>${res.checkOut}</td>
+            <td>${res.estado}</td>
+            <td>
+                <button class="btn text-success btnEditarReserva" data-id=${res.id}>
+                    <i class="fas fa-edit"></i>
+                </button>
+            </td>
+            <td>
+                <button class="btn text-danger btnBorrarReserva" data-id=${res.id}>
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+        `;
+        });
+    }
+
+    buscarReservaBtn.addEventListener("click", async () => {
+        reservacionesTbody.innerHTML = loaderReserva;
+        if (buscarReservaInput.value != "") {
+            let texto = buscarReservaInput.value.toLowerCase();
+            let todas = await reservationService.getAll();
+            let filtradas = todas.filter((res) => {
+                for (let key in res) {
+                    if (String(res[key]).toLowerCase().includes(texto)) return true;
+                }
+                return false;
+            });
+            mostrarReservaciones(filtradas);
+        } else {
+            let todas = await reservationService.getAll();
+            mostrarReservaciones(todas);
+        }
+    });
+
+    buscarTodasReservasBtn.addEventListener("click", async () => {
+        reservacionesTbody.innerHTML = loaderReserva;
+        let todas = await reservationService.getAll();
+        mostrarReservaciones(todas);
+    });
+
+    guardarNuevaReservaBtn.addEventListener("click", async () => {
+        let usuarioNuevaReserva = document.querySelector("#usuarioNuevaReserva");
+        let habitacionNuevaReserva = document.querySelector("#habitacionNuevaReserva");
+        let checkInNuevaReserva = document.querySelector("#checkInNuevaReserva");
+        let checkOutNuevaReserva = document.querySelector("#checkOutNuevaReserva");
+        let estadoNuevaReserva = document.querySelector("#estadoNuevaReserva");
+
+        infoValidateNewReserva.innerHTML = "";
+
+        if (
+            usuarioNuevaReserva.value != "" &&
+            habitacionNuevaReserva.value != "" &&
+            checkInNuevaReserva.value != "" &&
+            checkOutNuevaReserva.value != ""
+        ) {
+            let nuevaReserva = {
+                usuario: usuarioNuevaReserva.value,
+                habitacion: parseInt(habitacionNuevaReserva.value),
+                checkIn: checkInNuevaReserva.value,
+                checkOut: checkOutNuevaReserva.value,
+                estado: estadoNuevaReserva.value,
+            };
+
+            try {
+                await reservationService.create(nuevaReserva);
+                infoValidateNewReserva.innerHTML = "";
+                cerrarNuevaReservaBtn.click();
+
+                usuarioNuevaReserva.value = "";
+                habitacionNuevaReserva.value = "";
+                checkInNuevaReserva.value = "";
+                checkOutNuevaReserva.value = "";
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Reservación guardada",
+                    text: "La reservación fue registrada correctamente.",
+                    confirmButtonText: "Aceptar",
+                });
+
+                await buscarReservaBtn.click();
+            } catch (error) {
+                infoValidateNewReserva.innerHTML = `
+            <p class="text-danger"> 
+            * La reservación no pudo guardarse correctamente: ${error}
+            </p>`;
+            }
+        } else {
+            infoValidateNewReserva.innerHTML = `
+        <p class="text-danger"> 
+        * Debe rellenar todos los campos antes de guardar
+        </p>`;
+        }
+    });
+
+    reservacionesTbody.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".btnEditarReserva");
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const reserva = await reservationService.getById(id);
+
+        Swal.fire({
+            title: "Editar reservación",
+            html: `
+        <form id="formEditarReserva">
+            <div class="form-group text-start">
+                <label>Usuario</label>
+                <input type="text" class="form-control" id="usuarioEditarReserva" value="${reserva.usuario}">
+            </div>
+            <div class="form-group text-start">
+                <label>Habitación</label>
+                <input type="number" class="form-control" id="habitacionEditarReserva" value="${reserva.habitacion}">
+            </div>
+            <div class="form-group text-start">
+                <label>Check In</label>
+                <input type="date" class="form-control" id="checkInEditarReserva" value="${reserva.checkIn}">
+            </div>
+            <div class="form-group text-start">
+                <label>Check Out</label>
+                <input type="date" class="form-control" id="checkOutEditarReserva" value="${reserva.checkOut}">
+            </div>
+            <div class="form-group text-start">
+                <label>Estado</label>
+                <select class="form-control" id="estadoEditarReserva">
+                    <option value="pendiente" ${reserva.estado == "pendiente" ? "selected" : ""}>Pendiente</option>
+                    <option value="confirmado" ${reserva.estado == "confirmado" ? "selected" : ""}>Confirmado</option>
+                    <option value="cancelado" ${reserva.estado == "cancelado" ? "selected" : ""}>Cancelado</option>
+                </select>
+            </div>
+            <div class="mt-3 text-danger" id="infoValidateEditReserva"></div>
+        </form>
+        `,
+            showCancelButton: true,
+            confirmButtonText: "Guardar",
+            cancelButtonText: "Cancelar",
+
+            preConfirm: () => {
+                let usuario = document.getElementById("usuarioEditarReserva").value;
+                let habitacion = document.getElementById("habitacionEditarReserva").value;
+                let checkIn = document.getElementById("checkInEditarReserva").value;
+                let checkOut = document.getElementById("checkOutEditarReserva").value;
+                let estado = document.getElementById("estadoEditarReserva").value;
+
+                if (!usuario || !habitacion || !checkIn || !checkOut) {
+                    document.getElementById("infoValidateEditReserva").innerText =
+                        "* Todos los campos son obligatorios";
+                    return false;
+                }
+
+                return {
+                    usuario,
+                    habitacion: parseInt(habitacion),
+                    checkIn,
+                    checkOut,
+                    estado,
+                };
+            },
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await reservationService.update(id, result.value);
+                    Swal.fire("Actualizado!", "La reservación se editó correctamente", "success");
+                    buscarReservaBtn.click();
+                } catch (error) {
+                    Swal.fire("Error", "No se pudo actualizar la reservación", "error");
+                }
+            }
+        });
+    });
+
+    reservacionesTbody.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".btnBorrarReserva");
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const reserva = await reservationService.getById(id);
+
+        Swal.fire({
+            title: `¿Eliminar la reservación ${id}?`,
+            showDenyButton: true,
+            confirmButtonText: "Sí",
+            denyButtonText: "Cancelar",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await reservationService.delete(id);
+                Swal.fire("Eliminada!", "", "success");
+                buscarReservaBtn.click();
+            }
+        });
+    });
 }
