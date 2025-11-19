@@ -61,6 +61,17 @@
 
     </header>
 
+    <script>
+        document.querySelectorAll('.navbar-nav .nav-link, #logoutBtn').forEach(item => {
+            item.addEventListener('click', () => {
+                const navbar = document.querySelector('.navbar-collapse');
+                if (navbar.classList.contains('show')) {
+                    $('.navbar-collapse').collapse('hide');
+                }
+            });
+        });
+    </script>
+
     <main id="app">
         <!-- Aquí se inyectan las vistas dinámicamente -->
     </main>
@@ -88,33 +99,49 @@
 
 
     <script type="module" src="assets/js/app.js"></script>
-    <footer class="footer-bar" style="background-color:#0a322c">
-        <div class="container-fluid max-container py-2">
-            <div class="row align-items-center text-center text-md-left">
-
-                <div class="col-12 col-md-6 mb-2 mb-md-0">
-                    <p class="lead text-white mb-0">
-                        © 2025 - MALULA - Todos los derechos reservados
-                    </p>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <div class="d-flex justify-content-center justify-content-md-end">
-                        <a class="mx-2" href="#">
-                            <img src="img/logoFace.png" width="25">
-                        </a>
-                        <a class="mx-2" href="#">
-                            <img src="img/logoInsta.png" width="25">
-                        </a>
-                        <a class="mx-2" href="#">
-                            <img src="img/logoX.png" width="25">
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </footer>
 </body>
+<footer class=" text-white" style="background-color:#0a322c">
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h6 class="text-uppercase">Hotel Malula</h6>
+                <div class="text-white text-center d-flex">
+                    <a class="mr-2" href="#">
+                        <img src="img/logoFace.png" alt="Logo" width="30" class="d-inline-block align-text-top" />
+                    </a>
+                    <a class="mr-2" href="#">
+                        <img src="img/logoInsta.png" alt="Logo" width="30" class="d-inline-block align-text-top" />
+                    </a>
+                    <a class="mr-2" href="#">
+                        <img src="img/logoX.png" alt="Logo" width="30" class="d-inline-block align-text-top" />
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <h6 class="text-uppercase">Enlaces</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white-50">Reservas</a></li>
+                    <li><a href="#" class="text-white-50">Usuarios</a></li>
+                    <li><a href="#" class="text-white-50">Habitaciones</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <h6 class="text-uppercase">Contacto</h6>
+                <p class="small mb-0">
+                    Email: soporte@hotelmalula.com
+                    <br>
+                    Tel: (353) 5555-5555
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="bg-secondary text-center py-2">
+        <small>© 2025 Hotel Malula — Todos los derechos reservados</small>
+    </div>
+</footer>
 
 </html>
