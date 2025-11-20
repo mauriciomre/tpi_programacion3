@@ -1,0 +1,60 @@
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title">
+                        <i class="fas fa-calendar-check"></i> Mis Reservas
+                    </h3>
+                    <div class="card-tools">
+                        <button id="logoutBtn" class="btn btn-danger btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Loader -->
+                    <div id="loaderReservas" style="display: none;" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Cargando...</span>
+                        </div>
+                        <p class="mt-3">Cargando tus reservas...</p>
+                    </div>
+                    
+                    <!-- Mensaje vacío -->
+                    <div id="emptyMessage" style="display: none;"></div>
+                    
+                    <!-- Tabla de reservas -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Habitación</th>
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                    <th>Días</th>
+                                    <th>Precio/día</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyMisReservas">
+                                <!-- Las reservas se cargan acá dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card-footer text-center">
+                    <a href="#/habitaciones" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Nueva Reserva
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -3,6 +3,7 @@ import { initDatePickers } from "./utils/date-init.js";
 import { reservationController } from "./controllers/reservationController.js";
 import { renderizarLoginView, renderizarRegisterView } from "./views/loginView.js";
 import { dashboardController } from "./controllers/dashboardController.js";
+import { renderMiReservaView } from "./views/miReservaView.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     router.addRoute("dashboard", "pages/dashboard.html");
     router.addRoute("registro", "pages/register.html");
     router.addRoute("habitaciones", "pages/rooms.html");
+    router.addRoute("mis-reservas", "pages/miReserva.html");
 
     // 👇 Se ejecuta DESPUÉS de cada carga de vista
     router.onPageLoaded = (path) => {
@@ -35,6 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
             case "pages/dashboard.html":
                 dashboardController();
+                break;
+            case "pages/miReserva.html":
+                renderMiReservaView();
                 break;
 
             // CASE PARA CADA CONTROLLER
