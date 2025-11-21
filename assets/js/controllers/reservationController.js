@@ -13,6 +13,7 @@ export function reservationController() {
 
         console.log(allRooms);
 
+
         let allReservations = await reservationService.getAll();
 
         console.log(allReservations);
