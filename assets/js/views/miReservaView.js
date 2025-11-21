@@ -1,5 +1,6 @@
 import { reservationService, roomService } from "../services/apiServices.js";
 import { getActualUser } from "../services/storageService.js";
+import {formatearFecha} from "../utils/date-init.js";
 
 export async function renderMiReservaView() {
     console.log('Renderizando Reservas');
@@ -20,7 +21,7 @@ export async function renderMiReservaView() {
     try {
         // Obtener reservas
         const allReservations = await reservationService.getAll();
-        const miReserva = allReservations.filter(reservation => reservation.userId === usuarioActual.id);
+        const miReserva = allReservations.filter(reservation => String(reservation.userId) === String(usuarioActual.id));
 
         console.log('Total reservas del usuario:', miReserva.length);
 
@@ -51,7 +52,7 @@ export async function renderMiReservaView() {
 
         // Mostrar cada reserva
         for (const reservation of miReserva) {
-            const room = allRooms.find(r => r.id === reservation.roomId);
+            const room = allRooms.find(r => String(r.id) === String(reservation.roomId));
 
             // Badge según estado
             let estadoBadge = '';

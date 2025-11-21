@@ -3,7 +3,7 @@
 
 // ⚠️ REEMPLAZA ESTAS URLs con las de TUS proyectos en MockAPI
 const API_BASE_URL_1 = "https://6914d9e73746c71fe049d586.mockapi.io"; // users y rooms
-const API_BASE_URL_2 = "https://6914ead03746c71fe04a079f.mockapi.io"; // reservations
+const API_BASE_URL_2 = "https://6920df53512fb4140bdeaeb0.mockapi.io"; // reservations
 
 // ==============================================
 // FUNCIONES AUXILIARES
