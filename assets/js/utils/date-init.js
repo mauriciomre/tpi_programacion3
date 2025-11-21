@@ -38,3 +38,13 @@ export function initDatePickers() {
         }
     });
 }
+
+
+
+export function formatearFecha(dateString) {
+    if (!dateString) return 'N/A';
+    // Crea un objeto Date desde el string 'YYYY-MM-DD'
+    const date = new Date(dateString); 
+    // Muestra en formato DD/MM/YYYY
+    return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
