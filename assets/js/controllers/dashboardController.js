@@ -980,13 +980,13 @@ export async function dashboardController() {
                 <label>Usuario</label>
                 <select id="editarUsuarioReserva" class="form-control">
                     ${usuarios
-                        .map(
-                            (u) =>
-                                `<option value="${u.id}" ${u.id == reserva.userId ? "selected" : ""}>
+                    .map(
+                        (u) =>
+                            `<option value="${u.id}" ${u.id == reserva.userId ? "selected" : ""}>
                             ${u.nombre} (${u.email})
                         </option>`
-                        )
-                        .join("")}
+                    )
+                    .join("")}
                 </select>
             </div>
 
