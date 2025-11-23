@@ -1,4 +1,6 @@
 import { userService, roomService, reservationService } from "../services/apiServices.js";
+import { formatearFecha, parsearFechaLocalizada, validarRangoFechas, initDatePickers } from "../utils/date-init.js";
+import { getHabitacionesDisponibles } from "../utils/disponibilidad.js";
 
 export async function dashboardController() {
     const logoutBtn = document.querySelector("#logoutBtn");
@@ -803,123 +805,130 @@ export async function dashboardController() {
     }
 
     // AGREGAR RESERVACION
-    const usuarioNuevaReserva = document.querySelector("#usuarioNuevaReserva");
-    const checkInNuevaReserva = document.querySelector("#checkInNuevaReserva");
-    const checkOutNuevaReserva = document.querySelector("#checkOutNuevaReserva");
-    const habitacionNuevaReserva = document.querySelector("#habitacionNuevaReserva");
-    const estadoNuevaReserva = document.querySelector("#estadoNuevaReserva");
 
-    agregarNuevaReservaBtn.addEventListener("click", async () => {
-        usuarioNuevaReserva.innerHTML = ``;
-        let allUsers = await userService.getAll();
-        allUsers.forEach((user) => {
-            usuarioNuevaReserva.innerHTML += `<option value="${user.id}">${user.nombre} (${user.id}) - ${user.email}</option>`;
-        });
+    // =========================================================================
+    // --- SECCIÓN NUEVA RESERVA ---
+    // =========================================================================
 
-        checkInNuevaReserva.value = "";
-        checkOutNuevaReserva.value = "";
-        infoValidateNewReserva.innerHTML = "";
-        await cargarHabitacionesDisponibles();
-    });
+    // 1. ENLAZAR ELEMENTOS (Usando los IDs de tu HTML)
 
-    checkInNuevaReserva.addEventListener("change", () => {
-        cargarHabitacionesDisponibles();
-    });
+    const nuevaReservaDateIn = document.querySelector("#reservationdatein");
+    const nuevaReservaDateOut = document.querySelector("#reservationdateout");
+    const nuevaReservaRoomSelect = document.querySelector("#habitacionNuevaReserva"); // Select de Habitaciones
+    const nuevaReservaUserSelect = document.querySelector("#usuarioNuevaReserva"); // Select de Usuarios
+    const btnGuardarNuevaReserva = document.querySelector("#btnGuardarNuevaReserva"); // Tu botón de Guardar
+    const estadoNuevaReserva = document.querySelector("#estadoNuevaReserva"); // Asumiendo que tienes un select/input para el estado
+    const msgNuevaReserva = document.querySelector("#infoValidateNewReserva"); // Contenedor de Mensajes
 
-    checkOutNuevaReserva.addEventListener("change", () => {
-        cargarHabitacionesDisponibles();
-    });
-
+    // 2. FUNCIÓN ASÍNCRONA: Consulta y carga las habitaciones disponibles
     async function cargarHabitacionesDisponibles() {
-        let checkIn = checkInNuevaReserva.value;
-        let checkOut = checkOutNuevaReserva.value;
+        // Limpiar mensajes y poner un loader
+        msgNuevaReserva.innerHTML = '';
+        nuevaReservaRoomSelect.innerHTML = '<option value="">Buscando disponibilidad...</option>';
 
-        habitacionNuevaReserva.innerHTML = "";
+        // Leer el valor del input anidado dentro del contenedor del DatePicker
+        // Esto es necesario porque el DatePicker usa un input de texto para mostrar la fecha
+        const fechaEntrada = nuevaReservaDateIn.querySelector('input').value;
+        const fechaSalida = nuevaReservaDateOut.querySelector('input').value;
 
-        if (!checkIn || !checkOut || checkIn == "" || checkOut == "") {
-            habitacionNuevaReserva.innerHTML = `<option value="">Seleccione fechas primero...</option>`;
+        // Usamos la función de validación de tu módulo date-init.js
+        const validacion = validarRangoFechas(fechaEntrada, fechaSalida);
+
+        if (!validacion.isValid) {
+            nuevaReservaRoomSelect.innerHTML = '<option value="">-- Habitaciones --</option>';
+            // Mostrar error en el contenedor de mensajes
+            msgNuevaReserva.innerHTML = `<div class="alert alert-danger">${validacion.errorMsg}</div>`;
             return;
         }
 
-        if (checkIn >= checkOut) {
-            infoValidateNewReserva.innerHTML = `<p class="text-danger">* El check-out debe ser posterior al check-in</p>`;
-            return;
-        } else {
-            infoValidateNewReserva.innerHTML = "";
-        }
+        try {
+            // 🚨 EJECUCIÓN: Llamada a la función que SÍ está definida en disponibilidad.js
+            const disponibles = await getHabitacionesDisponibles(validacion.checkInISO, validacion.checkOutISO);
 
-        let habitaciones = await roomService.getAll();
-        let reservas = await reservationService.getAll();
+            let opciones = disponibles.map(h =>
+                // 💡 Nota: Asegúrate que 'tipo' y 'precio' sean propiedades válidas
+                `<option value="${h.id}">Habitación ${h.id} - ${h.tipo} - ($${h.precio}/noche)</option>`
+            ).join('');
 
-        let disponibles = habitaciones.filter((hab) => {
-            if (hab.disponible) {
-                let reservada = reservas.some((res) => {
-                    if (parseInt(res.roomId) != parseInt(hab.id)) return false;
-
-                    let resIn = new Date(res.checkIn);
-                    let resOut = new Date(res.checkOut);
-                    let inDate = new Date(checkIn);
-                    let outDate = new Date(checkOut);
-
-                    let seSolapan = !(outDate <= resIn || inDate >= resOut);
-
-                    return seSolapan;
-                });
-
-                return !reservada;
+            if (disponibles.length === 0) {
+                opciones = '<option value="">No hay habitaciones disponibles</option>';
             } else {
-                return false;
+                opciones = '<option value="">Seleccione habitación</option>' + opciones;
             }
-        });
 
-        if (disponibles.length === 0) {
-            habitacionNuevaReserva.innerHTML = `<option value="">No hay habitaciones disponibles</option>`;
-            return;
+            nuevaReservaRoomSelect.innerHTML = opciones;
+            msgNuevaReserva.innerHTML = ''; // Limpiar mensaje de éxito/error
+
+        } catch (error) {
+            console.error('Error al cargar habitaciones:', error);
+            nuevaReservaRoomSelect.innerHTML = '<option value="">Error de conexión</option>';
+            msgNuevaReserva.innerHTML = `<div class="alert alert-danger">Error al buscar disponibilidad.</div>`;
         }
-
-        habitacionNuevaReserva.innerHTML = `<option value="">Seleccione una habitación...</option>`;
-
-        disponibles.forEach((h) => {
-            habitacionNuevaReserva.innerHTML += `
-            <option value="${h.id}">
-                Habitación ${h.id} - ${h.tipo} - $${h.precio}/noche
-            </option>
-        `;
-        });
     }
 
-    guardarNuevaReservaBtn.addEventListener("click", async () => {
+    // 3. INICIALIZACIÓN: Cargar Usuarios y Calendarios (Se ejecuta una vez)
+
+    // A. Llenar el Select de Usuarios al cargar el dashboard
+    const users = await userService.getAll();
+    // Limpiamos y luego llenamos el select de usuarios
+    nuevaReservaUserSelect.innerHTML = users.map(u =>
+        `<option value="${u.id}">${u.nombre} - ${u.email}</option>`
+    ).join('');
+
+    // B. Inicializar DatePickers
+    // Esto activa la validación automática de minDate/maxDate
+    initDatePickers();
+
+    // 4. LISTENERS: Conectar el calendario a la lógica de disponibilidad
+    // Usamos el evento 'change.datetimepicker' de Bootstrap/jQuery para los DatePickers
+    $('#reservationdatein').on('change.datetimepicker', cargarHabitacionesDisponibles);
+    $('#reservationdateout').on('change.datetimepicker', cargarHabitacionesDisponibles);
+
+
+    // 5. LISTENER: Lógica de Guardar Nueva Reserva (Adaptada con nombres de variables limpios)
+    btnGuardarNuevaReserva.addEventListener("click", async () => {
+        // 🚨 Lectura de fechas desde los inputs de los DatePickers
+        const checkInValue = nuevaReservaDateIn.querySelector('input').value;
+        const checkOutValue = nuevaReservaDateOut.querySelector('input').value;
+
+        // 1. Validar campos obligatorios
         if (
-            usuarioNuevaReserva.value === "" ||
-            habitacionNuevaReserva.value === "" ||
-            checkInNuevaReserva.value === "" ||
-            checkOutNuevaReserva.value === ""
+            nuevaReservaUserSelect.value === "" ||
+            nuevaReservaRoomSelect.value === "" ||
+            checkInValue === "" ||
+            checkOutValue === ""
         ) {
-            infoValidateNewReserva.innerHTML = `
+            msgNuevaReserva.innerHTML = `
             <p class="text-danger">* Debe completar todos los campos</p>
         `;
             return;
         }
 
-        if (checkInNuevaReserva.value >= checkOutNuevaReserva.value) {
-            infoValidateNewReserva.innerHTML = `
-            <p class="text-danger">* La fecha de salida debe ser mayor a la de entrada</p>
+        // 2. Validación de rango (aunque el DatePicker lo hace, esta es la validación final del formulario)
+        const validacion = validarRangoFechas(checkInValue, checkOutValue);
+
+        if (!validacion.isValid) {
+            msgNuevaReserva.innerHTML = `
+            <p class="text-danger">* ${validacion.errorMsg}</p>
         `;
             return;
         }
 
+        // 3. Crear el objeto de reserva
         let nuevaReserva = {
-            userId: parseInt(usuarioNuevaReserva.value),
-            roomId: parseInt(habitacionNuevaReserva.value),
-            checkIn: checkInNuevaReserva.value,
-            checkOut: checkOutNuevaReserva.value,
+            userId: parseInt(nuevaReservaUserSelect.value),
+            roomId: parseInt(nuevaReservaRoomSelect.value),
+            // Usamos los formatos ISO validados
+            checkIn: validacion.checkInISO,
+            checkOut: validacion.checkOutISO,
             estado: estadoNuevaReserva.value,
         };
 
+        // 4. Intentar guardar la reserva
         try {
             await reservationService.create(nuevaReserva);
 
-            infoValidateNewReserva.innerHTML = "";
+            msgNuevaReserva.innerHTML = "";
 
             Swal.fire({
                 icon: "success",
@@ -928,11 +937,16 @@ export async function dashboardController() {
                 confirmButtonText: "Aceptar",
             });
 
-            buscarReservaBtn.click();
-            cerrarNuevaReservaBtn.click();
+            // 5. Recargar la lista de reservas y cerrar el modal
+            // Asumo que 'buscarReservaBtn' es el botón de recarga de la tabla de reservas
+            const buscarReservaBtn = document.querySelector("#btnBuscarReserva");
+            if (buscarReservaBtn) buscarReservaBtn.click();
+            if (cerrarNuevaReservaBtn) cerrarNuevaReservaBtn.click();
+
         } catch (err) {
-            infoValidateNewReserva.innerHTML = `
-            <p class="text-danger">* Error al guardar la reservación: ${err}</p>
+            console.error("Error al guardar reserva:", err);
+            msgNuevaReserva.innerHTML = `
+            <p class="text-danger">* Error al guardar la reservación: ${err.message || err}</p>
         `;
         }
     });

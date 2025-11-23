@@ -76,7 +76,7 @@ export function reservationController() {
                 </tr>`;
         });
 
-        //CIERRE DE LA TABLA Y EL CONTENEDOR CARD
+        //Cierre tabla y contenedor card
         tabla += `
                         </tbody>
                     </table>
@@ -107,7 +107,7 @@ export function reservationController() {
             const noches = calcularNoches(fechaInISO, fechaOutISO);
             const precioTotal = noches * habitacion.precio;
 
-            // ⭐ TU TARJETA EXACTAMENTE IGUAL
+            // Carga card
             cont.innerHTML = `
             <div class="card border-success card-personalizada">
                 <div class="card-header  text-black">
@@ -159,7 +159,12 @@ export function reservationController() {
 
                 await reservationService.create(nuevaReserva);
 
-                alert("Reserva confirmada con éxito!");
+                Swal.fire({
+                    icon: "success",
+                    title: "Reservación guardada",
+                    text: "La reservación fue registrada correctamente.",
+                    confirmButtonText: "Aceptar",
+                });
 
                 document.querySelector("#habitacionesDisponiblesContainer").innerHTML = "";
                 document.querySelector("#habitacionSeleccionadaContainer").innerHTML = "";
@@ -171,8 +176,6 @@ export function reservationController() {
         }
 
     });
-
-    // ... (El resto de tu código se mantiene)
 
     //Limpia los valores de los inputs del datetimepicker
     function limpiarYResetearFechas() {
