@@ -73,3 +73,43 @@ export function validarFechasConsecutivas(checkIn, checkOut) {
     // Compara si la salida es ESTRICTAMENTE posterior a la entrada, ignorando la hora
     return fechaOut.isAfter(fechaIn, 'day');
 }
+
+export function validarRangoFechas(fechaEntrada, fechaSalida) {
+    if (!fechaEntrada || !fechaSalida) {
+        return {
+            isValid: false,
+            errorMsg: '⚠️ Debes ingresar ambas fechas para continuar',
+            checkInISO: null,
+            checkOutISO: null
+        };
+    }
+
+    const checkInISO = parsearFechaLocalizada(fechaEntrada);
+    const checkOutISO = parsearFechaLocalizada(fechaSalida);
+
+    if (!checkInISO || !checkOutISO) {
+        return {
+            isValid: false,
+            errorMsg: '❌ Formato de fecha inválido. Usar DD/MM/YYYY',
+            checkInISO: null,
+            checkOutISO: null
+        };
+    }
+
+    if (checkInISO >= checkOutISO) {
+        return {
+            isValid: false,
+            errorMsg: '❌ La fecha de Check Out debe ser posterior a la de Check In',
+            checkInISO: null,
+            checkOutISO: null
+        };
+    }
+
+    // Todo es válido
+    return {
+        isValid: true,
+        errorMsg: null,
+        checkInISO,
+        checkOutISO
+    };
+}

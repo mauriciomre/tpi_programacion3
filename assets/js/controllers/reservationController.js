@@ -1,6 +1,7 @@
 import { roomService, reservationService } from "../services/apiServices.js";
 import { getActualUser } from "../services/storageService.js";
-import { validarFormatoFechaISO, validarFechasConsecutivas, parsearFechaLocalizada } from "../utils/date-init.js";
+import { parsearFechaLocalizada, validarRangoFechas, initDatePickers } from "../utils/date-init.js";
+import { haySolapamiento, calcularNoches, getHabitacionesDisponibles } from "../utils/disponibilidad.js";
 
 export function reservationController() {
 
@@ -8,179 +9,158 @@ export function reservationController() {
     const contenedor = document.querySelector("#habitacionesDisponiblesContainer");
 
     buscarHabitacionesBtn.addEventListener("click", async () => {
-        console.log("BUSCANDO HABITACIONES");
 
-        //Toma fechas ingresadas
         const fechaEntrada = document.querySelector('#reservationdatein input').value;
         const fechaSalida = document.querySelector('#reservationdateout input').value;
 
-        if (!fechaEntrada || !fechaSalida) {
+        //Valida rangos
+        const validacion = validarRangoFechas(fechaEntrada, fechaSalida);
+
+        if (!validacion.isValid) {
             contenedor.innerHTML = `
-        <div class="alert alert-danger text-center fw-bold">
-            ⚠️ Debes ingresar ambas fechas para continuar
-        </div>
-    `;
+                <div class="alert alert-danger text-center fw-bold">
+                    ${validacion.errorMsg}
+                </div>`;
+            limpiarYResetearFechas();
             return;
         }
 
-        //Trae habitaciones habilitadas y todas las reservas hechas
-        let habitacionesHabilitadas = await roomService.getAvailable();
-        let allReservations = await reservationService.getAll();
-        contenedor.innerHTML = " "
+        const checkInISO = validacion.checkInISO;
+        const checkOutISO = validacion.checkOutISO;
 
-        console.log("Habitaciones habilitadas:", habitacionesHabilitadas);
-        console.log("Reservas:", allReservations);
+        contenedor.innerHTML = "";
 
-        // Función que detecta si una habitación está ocupada
-        function estaOcupada(habitacionId, checkIn, checkOut, reservas) {
-            const inDate = new Date(checkIn);
-            const outDate = new Date(checkOut);
+        // Filtrar disponibles
+        let disponibles = await getHabitacionesDisponibles(checkInISO, checkOutISO);
 
-            return reservas.some((res) => {
-                if (parseInt(res.roomId) !== parseInt(habitacionId)) return false;
-
-                const resIn = new Date(res.checkIn);
-                const resOut = new Date(res.checkOut);
-
-                // si NO se cumplen las condiciones de "no solapan", entonces SÍ solapan
-                const seSolapan = !(outDate <= resIn || inDate >= resOut);
-
-                return seSolapan;
-            });
-        }
-
-        //Filtrar habitaciones libres en esas fechas
-        let disponibles = habitacionesHabilitadas.filter(hab => {
-            const ocupada = estaOcupada(hab.id, fechaEntrada, fechaSalida, allReservations);
-            return !ocupada;
-        });
-
-        console.log("Habitaciones disponibles según fechas:", disponibles);
         if (disponibles.length === 0) {
             contenedor.innerHTML = `
-        <div class="alert alert-warning text-center fw-bold">
-            ⛔ No hay habitaciones disponibles para esas fechas
-        </div>`;
+                <div class="alert alert-warning text-center fw-bold">
+                    ⛔ No hay habitaciones disponibles para esas fechas
+                </div>`;
+            limpiarYResetearFechas();
             return;
         }
 
-        let tabla = `<table class="table table-bordered table-striped mt-3">
-        <thead class="thead-dark">
-            <tr>
-                <th>ID</th>
-                <th>Tipo</th>
-                <th>Precio</th>
-                <th>Estado</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>`;
+        //Inicio de tabla con estilos
+        let tabla = `
+        <div class="card card-personalizada card-outline">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-bed"></i>Habitaciones disponibles</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="thead">
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
 
+        // Carga tabla
         disponibles.forEach(hab => {
             tabla += `
-        <tr>
-            <td>${hab.id}</td>
-            <td>${hab.tipo}</td>
-            <td>$ ${hab.precio}</td>
-            <td>Disponible</td>
-            <td>
-                <button class="btn btn-success btnSeleccionar" data-id="${hab.id}">
-                    Seleccionar
-                </button>
-            </td>
-        </tr>`;
+                <tr>
+                    <td>${hab.id}</td>
+                    <td>${hab.tipo}</td>
+                    <td><span class="badge bg-success">Disponible</span></td>
+                    <td>
+                        <button class="btn btn-outline-success btnSeleccionar" data-id="${hab.id}">
+                            Seleccionar
+                        </button>
+                    </td>
+                </tr>`;
         });
 
+        //CIERRE DE LA TABLA Y EL CONTENEDOR CARD
         tabla += `
-        </tbody>
-        </table>`;
-
-        contenedor.innerHTML = tabla;
-        contenedor.innerHTML = tabla;
-
-        // Activa los botones "Seleccionar"
-        document.querySelectorAll(".btnSeleccionar").forEach(btn => {
-            btn.addEventListener("click", async () => {
-                const id = btn.dataset.id;
-
-                // Busca la habitación
-                const habitacion = disponibles.find(h => h.id == id);
-
-                mostrarHabitacionSeleccionada(habitacion, fechaEntrada, fechaSalida);
-            });
-        });
-
-        function mostrarHabitacionSeleccionada(habitacion, fechaIn, fechaOut) {
-            const cont = document.querySelector("#habitacionSeleccionadaContainer");
-
-            cont.innerHTML = `
-        <div class="card border-success">
-            <div class="card-header bg-success text-white">
-                Habitación seleccionada
-            </div>
-
-            <div class="card-body">
-                <p><strong>ID:</strong> ${habitacion.id}</p>
-                <p><strong>Tipo:</strong> ${habitacion.tipo}</p>
-                <p><strong>Precio:</strong> $ ${habitacion.precio}</p>
-                <p><strong>Check In:</strong> ${fechaIn}</p>
-                <p><strong>Check Out:</strong> ${fechaOut}</p>
-
-                <button id="btnConfirmarReserva" class="btn btn-primary mt-3">
-                    Confirmar reserva
-                </button>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>`;
+        contenedor.innerHTML = tabla;
 
-            // Evento del botón confirmar
+        // Activar selección
+        document.querySelectorAll(".btnSeleccionar").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.dataset.id;
+                const habitacion = disponibles.find(h => h.id == id);
+
+                mostrarHabitacionSeleccionada(
+                    habitacion,
+                    fechaEntrada,
+                    fechaSalida,
+                    checkInISO,
+                    checkOutISO
+                );
+            });
+        });
+
+        function mostrarHabitacionSeleccionada(habitacion, fechaInLocal, fechaOutLocal, fechaInISO, fechaOutISO) {
+            const cont = document.querySelector("#habitacionSeleccionadaContainer");
+
+            const noches = calcularNoches(fechaInISO, fechaOutISO);
+            const precioTotal = noches * habitacion.precio;
+
+            // ⭐ TU TARJETA EXACTAMENTE IGUAL
+            cont.innerHTML = `
+            <div class="card border-success card-personalizada">
+                <div class="card-header  text-black">
+                    <div card-title>Habitación seleccionada</div>
+                    <div class="image-strip">
+                        <img src="/img/calma1.jpg" class="img-fluid" alt="calma">
+                        <img src="/img/calma2.jpg" class="img-fluid" alt="calma">
+                        <img src="/img/calma3.jpg" class="img-fluid" alt="calma">
+                        <img src="/img/calma4.jpg" class="img-fluid" alt="calma">
+                        <img src="/img/calma5.jpg" class="img-fluid" alt="calma">
+                    </div>
+
+                <div class="card-body">
+                           
+                    <p><strong>Habitación:</strong> ${habitacion.tipo}</p>
+                    <p><strong>Precio por noche:</strong> $ ${habitacion.precio}</p>
+                    <p><strong>Noches:</strong> ${noches}</p>
+                    <p><strong>Total:</strong> $ ${precioTotal}</p>
+
+                    <p><strong>Check In:</strong> ${fechaInLocal}</p>
+                    <p><strong>Check Out:</strong> ${fechaOutLocal}</p>
+
+                    <button id="btnConfirmarReserva" class="btn btn-primary mt-3">
+                        Confirmar reserva
+                    </button>
+                    </div>
+                </div>`;
+
             document.querySelector("#btnConfirmarReserva").addEventListener("click", async () => {
-                await confirmarReserva(habitacion.id, fechaIn, fechaOut);
+                await confirmarReserva(habitacion.id, fechaInISO, fechaOutISO);
             });
         }
-        // reservationController.js (Tu función dentro del addEventListener del botón Buscar)
 
-        async function confirmarReserva(roomId, checkIn, checkOut, precioTotal) {
-
-            // Parseo y validación de formato
-            const checkInISO = parsearFechaLocalizada(checkIn);
-            const checkOutISO = parsearFechaLocalizada(checkOut);
-
-            // Si el parseo falla (ej: fecha inválida o formato incorrecto), cancelamos
-            if (!checkInISO || !checkOutISO) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error de Formato",
-                    text: "Las fechas no pudieron ser convertidas a formato API. Por favor, revisá que el formato sea correcto.",
-                    confirmButtonText: "Aceptar",
-                });
-                return;
-            }
-
-
+        async function confirmarReserva(roomId, checkInISO, checkOutISO) {
             try {
                 const user = getActualUser();
                 if (!user) {
-                    alert("⚠️ No hay un usuario logueado para hacer la reserva.");
+                    alert("⚠️ No hay usuario logueado.");
                     return;
                 }
-                const userId = user.id;
 
-                // Crea el objeto de reserva, USANDO LAS NUEVAS VARIABLES ISO
                 const nuevaReserva = {
-                    userId: userId,
-                    roomId: roomId,
+                    userId: user.id,
+                    roomId,
                     checkIn: checkInISO,
                     checkOut: checkOutISO,
-                    precioTotal: precioTotal,
                     estado: "confirmado"
                 };
 
-                // Crear la reserva en mockAPI
                 await reservationService.create(nuevaReserva);
 
                 alert("Reserva confirmada con éxito!");
 
-                // Limpiar pantalla
                 document.querySelector("#habitacionesDisponiblesContainer").innerHTML = "";
                 document.querySelector("#habitacionSeleccionadaContainer").innerHTML = "";
 
@@ -189,40 +169,28 @@ export function reservationController() {
                 alert("No se pudo confirmar la reserva.");
             }
         }
-        async function confirmarReserva(roomId, checkIn, checkOut) {
-            try {
-                const user = getActualUser();
-                if (!user) {
-                    alert("⚠️ No hay un usuario logueado para hacer la reserva.");
-                    return;
-                }
-                const userId = user.id;
 
-                //Crea el objeto de reserva
-                const nuevaReserva = {
-                    userId: userId,
-                    roomId: roomId,
-                    checkIn: checkIn,
-                    checkOut: checkOut,
-                    estado: "confirmado"
-                };
-
-                //Crear la reserva en mockAPI
-                await reservationService.create(nuevaReserva);
-
-                alert("Reserva confirmada con éxito!");
-
-                // Limpiar pantalla
-                document.querySelector("#habitacionesDisponiblesContainer").innerHTML = "";
-                document.querySelector("#habitacionSeleccionadaContainer").innerHTML = "";
-
-            } catch (error) {
-                console.error("Error al crear reserva:", error);
-                alert("No se pudo confirmar la reserva.");
-            }
-        }
     });
-}
 
+    // ... (El resto de tu código se mantiene)
+
+    //Limpia los valores de los inputs del datetimepicker
+    function limpiarYResetearFechas() {
+        // Borrar fechas cargadas
+        try {
+            $('#reservationdatein').datetimepicker('destroy');
+            $('#reservationdateout').datetimepicker('destroy');
+        } catch (e) {
+            // Ignoramos el error si el datetimepicker no estaba inicializado
+        }
+
+        //Limpiar imputs
+        $('#reservationdatein input').val('');
+        $('#reservationdateout input').val('');
+
+        // Reinicializa los pickers
+        initDatePickers();
+    }
+}
 
 
