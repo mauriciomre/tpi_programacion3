@@ -2,6 +2,7 @@ import { roomService, reservationService } from "../services/apiServices.js";
 import { getActualUser } from "../services/storageService.js";
 import { parsearFechaLocalizada, validarRangoFechas, initDatePickers } from "../utils/date-init.js";
 import { haySolapamiento, calcularNoches, getHabitacionesDisponibles } from "../utils/disponibilidad.js";
+import { generateRoomCardHTML } from "../utils/cardGenerator.js";
 
 export function reservationController() {
 
@@ -51,7 +52,7 @@ export function reservationController() {
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
-                        <thead class="thead">
+                        <thead class="thead cabecera">
                             <tr>
                                 <th>ID</th>
                                 <th>Tipo</th>
@@ -98,6 +99,11 @@ export function reservationController() {
                     checkInISO,
                     checkOutISO
                 );
+
+                //Baja a la card
+                const cont = document.querySelector("#habitacionSeleccionadaContainer");
+                cont.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
             });
         });
 
@@ -107,34 +113,16 @@ export function reservationController() {
             const noches = calcularNoches(fechaInISO, fechaOutISO);
             const precioTotal = noches * habitacion.precio;
 
-            // Carga card
-            cont.innerHTML = `
-            <div class="card border-success card-personalizada">
-                <div class="card-header  text-black">
-                    <div card-title>Habitación seleccionada</div>
-                    <div class="image-strip">
-                        <img src="/img/calma1.jpg" class="img-fluid" alt="calma">
-                        <img src="/img/calma2.jpg" class="img-fluid" alt="calma">
-                        <img src="/img/calma3.jpg" class="img-fluid" alt="calma">
-                        <img src="/img/calma4.jpg" class="img-fluid" alt="calma">
-                        <img src="/img/calma5.jpg" class="img-fluid" alt="calma">
-                    </div>
+            //Opciones de reserva
+            const opcionesReserva = {
+                noches: noches,
+                precioTotal: precioTotal,
+                fechaInLocal: fechaInLocal,
+                fechaOutLocal: fechaOutLocal,
+            };
 
-                <div class="card-body">
-                           
-                    <p><strong>Habitación:</strong> ${habitacion.tipo}</p>
-                    <p><strong>Precio por noche:</strong> $ ${habitacion.precio}</p>
-                    <p><strong>Noches:</strong> ${noches}</p>
-                    <p><strong>Total:</strong> $ ${precioTotal}</p>
-
-                    <p><strong>Check In:</strong> ${fechaInLocal}</p>
-                    <p><strong>Check Out:</strong> ${fechaOutLocal}</p>
-
-                    <button id="btnConfirmarReserva" class="btn btn-primary mt-3">
-                        Confirmar reserva
-                    </button>
-                    </div>
-                </div>`;
+            // Pasa habitacion y opcionesReserva al generador de tarjeta
+            cont.innerHTML = generateRoomCardHTML(habitacion, opcionesReserva);
 
             document.querySelector("#btnConfirmarReserva").addEventListener("click", async () => {
                 await confirmarReserva(habitacion.id, fechaInISO, fechaOutISO);

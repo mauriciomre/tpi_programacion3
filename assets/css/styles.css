@@ -68,6 +68,7 @@
     background: #0a322c;
     padding: 1rem;
     margin: 0;
+    height: 60%;
 }
 
 .carousel-caption {
@@ -119,6 +120,11 @@
     background-color: #fff;
     border-radius: 5px;
 
+}
+
+#habitacionSeleccionadaContainer {
+    padding-top: 80px;
+    margin-top: -80px;
 }
 
 .custom-tab {
@@ -173,6 +179,11 @@
     border-radius: 5px;
     flex: 0 0 auto;
     object-fit: cover;
+}
+
+.cabecera th {
+    font-size: 1.3rem;
+    font-weight: bold;
 }
 
 @media (max-width: 768px) {

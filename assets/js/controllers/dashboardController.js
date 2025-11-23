@@ -806,11 +806,7 @@ export async function dashboardController() {
 
     // AGREGAR RESERVACION
 
-    // =========================================================================
-    // --- SECCIÓN NUEVA RESERVA ---
-    // =========================================================================
-
-    // 1. ENLAZAR ELEMENTOS (Usando los IDs de tu HTML)
+    //ENLAZAR ELEMENTOS 
 
     const nuevaReservaDateIn = document.querySelector("#reservationdatein");
     const nuevaReservaDateOut = document.querySelector("#reservationdateout");
@@ -820,33 +816,31 @@ export async function dashboardController() {
     const estadoNuevaReserva = document.querySelector("#estadoNuevaReserva"); // Asumiendo que tienes un select/input para el estado
     const msgNuevaReserva = document.querySelector("#infoValidateNewReserva"); // Contenedor de Mensajes
 
-    // 2. FUNCIÓN ASÍNCRONA: Consulta y carga las habitaciones disponibles
+    //Consulta y carga las habitaciones disponibles
     async function cargarHabitacionesDisponibles() {
         // Limpiar mensajes y poner un loader
         msgNuevaReserva.innerHTML = '';
         nuevaReservaRoomSelect.innerHTML = '<option value="">Buscando disponibilidad...</option>';
 
-        // Leer el valor del input anidado dentro del contenedor del DatePicker
-        // Esto es necesario porque el DatePicker usa un input de texto para mostrar la fecha
+        // Leer el valor del DatePicker
         const fechaEntrada = nuevaReservaDateIn.querySelector('input').value;
         const fechaSalida = nuevaReservaDateOut.querySelector('input').value;
 
-        // Usamos la función de validación de tu módulo date-init.js
+        // Llama a función de validación de módulo date-init.js
         const validacion = validarRangoFechas(fechaEntrada, fechaSalida);
 
         if (!validacion.isValid) {
             nuevaReservaRoomSelect.innerHTML = '<option value="">-- Habitaciones --</option>';
-            // Mostrar error en el contenedor de mensajes
+            // Muestra error en el contenedor de mensajes
             msgNuevaReserva.innerHTML = `<div class="alert alert-danger">${validacion.errorMsg}</div>`;
             return;
         }
 
         try {
-            // 🚨 EJECUCIÓN: Llamada a la función que SÍ está definida en disponibilidad.js
+            // Llama a función de disponibilidad.js
             const disponibles = await getHabitacionesDisponibles(validacion.checkInISO, validacion.checkOutISO);
 
             let opciones = disponibles.map(h =>
-                // 💡 Nota: Asegúrate que 'tipo' y 'precio' sean propiedades válidas
                 `<option value="${h.id}">Habitación ${h.id} - ${h.tipo} - ($${h.precio}/noche)</option>`
             ).join('');
 
@@ -857,7 +851,7 @@ export async function dashboardController() {
             }
 
             nuevaReservaRoomSelect.innerHTML = opciones;
-            msgNuevaReserva.innerHTML = ''; // Limpiar mensaje de éxito/error
+            msgNuevaReserva.innerHTML = ''; // Limpiar mensaje
 
         } catch (error) {
             console.error('Error al cargar habitaciones:', error);
@@ -868,30 +862,27 @@ export async function dashboardController() {
 
     // 3. INICIALIZACIÓN: Cargar Usuarios y Calendarios (Se ejecuta una vez)
 
-    // A. Llenar el Select de Usuarios al cargar el dashboard
+    // Trae usuarios para cargar el select
     const users = await userService.getAll();
-    // Limpiamos y luego llenamos el select de usuarios
     nuevaReservaUserSelect.innerHTML = users.map(u =>
         `<option value="${u.id}">${u.nombre} - ${u.email}</option>`
     ).join('');
 
-    // B. Inicializar DatePickers
-    // Esto activa la validación automática de minDate/maxDate
+    //Inicializa DatePickers
     initDatePickers();
 
-    // 4. LISTENERS: Conectar el calendario a la lógica de disponibilidad
-    // Usamos el evento 'change.datetimepicker' de Bootstrap/jQuery para los DatePickers
+    // LISTENERS: escucha cualquier cambio en los imput y carga habitaciones
     $('#reservationdatein').on('change.datetimepicker', cargarHabitacionesDisponibles);
     $('#reservationdateout').on('change.datetimepicker', cargarHabitacionesDisponibles);
 
 
-    // 5. LISTENER: Lógica de Guardar Nueva Reserva (Adaptada con nombres de variables limpios)
+    // Guarda NUEVA RESERVA
     btnGuardarNuevaReserva.addEventListener("click", async () => {
-        // 🚨 Lectura de fechas desde los inputs de los DatePickers
+        // Lectura de fechas desde los inputs de los DatePickers
         const checkInValue = nuevaReservaDateIn.querySelector('input').value;
         const checkOutValue = nuevaReservaDateOut.querySelector('input').value;
 
-        // 1. Validar campos obligatorios
+        // Valida campos obligatorios
         if (
             nuevaReservaUserSelect.value === "" ||
             nuevaReservaRoomSelect.value === "" ||
@@ -904,27 +895,25 @@ export async function dashboardController() {
             return;
         }
 
-        // 2. Validación de rango (aunque el DatePicker lo hace, esta es la validación final del formulario)
+        // Validación de rango final
         const validacion = validarRangoFechas(checkInValue, checkOutValue);
 
         if (!validacion.isValid) {
             msgNuevaReserva.innerHTML = `
-            <p class="text-danger">* ${validacion.errorMsg}</p>
-        `;
+            <p class="text-danger">* ${validacion.errorMsg}</p>`;
             return;
         }
 
-        // 3. Crear el objeto de reserva
+        // Crea el objeto de reserva
         let nuevaReserva = {
             userId: parseInt(nuevaReservaUserSelect.value),
             roomId: parseInt(nuevaReservaRoomSelect.value),
-            // Usamos los formatos ISO validados
             checkIn: validacion.checkInISO,
             checkOut: validacion.checkOutISO,
             estado: estadoNuevaReserva.value,
         };
 
-        // 4. Intentar guardar la reserva
+        //Guardar la reserva
         try {
             await reservationService.create(nuevaReserva);
 
@@ -937,8 +926,7 @@ export async function dashboardController() {
                 confirmButtonText: "Aceptar",
             });
 
-            // 5. Recargar la lista de reservas y cerrar el modal
-            // Asumo que 'buscarReservaBtn' es el botón de recarga de la tabla de reservas
+            //Recarga la lista de reservas y cierra el formulario
             const buscarReservaBtn = document.querySelector("#btnBuscarReserva");
             if (buscarReservaBtn) buscarReservaBtn.click();
             if (cerrarNuevaReservaBtn) cerrarNuevaReservaBtn.click();
