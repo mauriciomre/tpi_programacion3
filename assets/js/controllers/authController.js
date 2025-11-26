@@ -27,18 +27,27 @@ export async function handleLogin(email, password) {
         }
         // login exitoso
         console.log(`Login exitoso: ${user}`);
+
+        const userName = user.nombre || user.email
         saveUser(user);
         alert(`Bienvenid@ ${user.nombre}`);
 
-        if (user.role === "ADMIN") {
-            window.location.href = "#/loquesea";
+        const userRoleUpper = user.role ? user.role.toUpperCase() : "USUARIO";
+        console.log(`DEBUG: El rol del usuario en MAYÚSCULAS es: "${userRoleUpper}"`);
+
+        if (userRoleUpper === "ADMIN") {
+            //
+            console.log("DEBUG: Rama ADMIN seleccionada.");
+            window.location.href = "#/dashboard";
         } else {
-            window.localStorage.href = "#/reservations";
+            //
+            console.log("DEBUG: Rama USUARIO seleccionada.");
+            window.location.href = "#/reservations";
         }
 
         return true;
     } catch (error) {
-        console.error(`Error de login: ${error}`);
+        console.error(`Error al iniciar sesión: ${error}`);
         alert("Error al iniciar seesion.");
         return false;
     }
@@ -130,8 +139,8 @@ export async function adminCreateUser(nombre, email, password, role) {
 }
 
 export async function adminChangePassword(idUser, newPassword) {
-    
-     if (newPassword === '' || newPassword.length < 6) {
+
+    if (newPassword === '' || newPassword.length < 6) {
         alert('La contraseña debe tener al menos 6 caracteres');
         return false;
     }
@@ -141,7 +150,7 @@ export async function adminChangePassword(idUser, newPassword) {
         alert('Contraseña cambiada con exito.');
 
         return true;
-    } catch (error){
+    } catch (error) {
         alert('Error al cambiar de contraseña');
         return false;
     }

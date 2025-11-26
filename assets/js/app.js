@@ -4,6 +4,7 @@ import { reservationController } from "./controllers/reservationController.js";
 import { renderizarLoginView, renderizarRegisterView } from "./views/loginView.js";
 import { dashboardController } from "./controllers/dashboardController.js";
 import { renderMiReservaView } from "./views/miReservaView.js";
+import { getActualUser, isAuthenticated } from "./services/storageService.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
@@ -36,8 +37,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 reservationController();
                 break;
             case "pages/dashboard.html":
-                dashboardController();
-                break;
+                const user = getActualUser();
+                // Verificamos si existe usuario y si su rol es ADMIN
+                if (user && user.role && user.role.toUpperCase() === 'ADMIN') {
+                    // Si es administrador, cargamos el controlador del dashboard
+                    dashboardController();
+                } else {
+                    // Si NO es administrador o NO está logueado, lo redirigimos
+                    window.location.hash = '#/inicio';
+                    alert('Acceso denegado. Solo para administradores.');
+                }
             case "pages/miReserva.html":
                 renderMiReservaView();
                 break;
