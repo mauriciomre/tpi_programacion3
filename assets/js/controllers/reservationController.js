@@ -6,18 +6,35 @@ import { generateRoomCardHTML } from "../utils/cardGenerator.js";
 
 export function reservationController() {
 
+    console.log('✅ Controlador de Reservas Inicializado.');
+
     const buscarHabitacionesBtn = document.querySelector("#buscarHabitaciones");
     const contenedor = document.querySelector("#habitacionesDisponiblesContainer");
 
     buscarHabitacionesBtn.addEventListener("click", async () => {
 
-        const fechaEntrada = document.querySelector('#reservationdatein input').value;
-        const fechaSalida = document.querySelector('#reservationdateout input').value;
+        let fechaEntrada = '';
+        let fechaSalida = '';
+
+        try {
+            const fechaInMoment = $('#reservationdatein').data('datetimepicker').date();
+            const fechaOutMoment = $('#reservationdateout').data('datetimepicker').date();
+
+            fechaEntrada = fechaInMoment ? fechaInMoment.format('L') : '';
+            fechaSalida = fechaOutMoment ? fechaOutMoment.format('L') : '';
+        } catch (e) {
+            // Evitar errores si el datetimepicker no está listo
+            console.error("Error al obtener la fecha del picker, usando input.value como fallback.", e);
+            fechaEntrada = document.querySelector('#reservationdatein input').value;
+            fechaSalida = document.querySelector('#reservationdateout input').value;
+        }
+        console.log(`🔎 Fechas de búsqueda: Entrada: ${fechaEntrada}, Salida: ${fechaSalida}`);
 
         //Valida rangos
         const validacion = validarRangoFechas(fechaEntrada, fechaSalida);
 
         if (!validacion.isValid) {
+            console.warn(`❌ Validación fallida: ${validacion.errorMsg}`);
             contenedor.innerHTML = `
                 <div class="alert alert-danger text-center fw-bold">
                     ${validacion.errorMsg}
@@ -28,11 +45,13 @@ export function reservationController() {
 
         const checkInISO = validacion.checkInISO;
         const checkOutISO = validacion.checkOutISO;
+        console.log(`✅ Rango válido. ISO: ${checkInISO} a ${checkOutISO}`);
 
         contenedor.innerHTML = "";
 
         // Filtrar disponibles
         let disponibles = await getHabitacionesDisponibles(checkInISO, checkOutISO);
+        console.log('🏠 Habitaciones disponibles encontradas:', disponibles);
 
         if (disponibles.length === 0) {
             contenedor.innerHTML = `
@@ -91,6 +110,7 @@ export function reservationController() {
             btn.addEventListener("click", () => {
                 const id = btn.dataset.id;
                 const habitacion = disponibles.find(h => h.id == id);
+                console.log('👉 Habitación seleccionada para reserva:', habitacion);
 
                 mostrarHabitacionSeleccionada(
                     habitacion,
@@ -145,7 +165,11 @@ export function reservationController() {
                     estado: "confirmado"
                 };
 
+                console.log('💾 Creando nueva reserva:', nuevaReserva);
+
                 await reservationService.create(nuevaReserva);
+
+                console.log('🎉 Reserva creada con éxito.');
 
                 Swal.fire({
                     icon: "success",
@@ -158,7 +182,7 @@ export function reservationController() {
                 document.querySelector("#habitacionSeleccionadaContainer").innerHTML = "";
 
             } catch (error) {
-                console.error("Error al crear reserva:", error);
+                console.error("🛑 Error al crear reserva:", error);
                 alert("No se pudo confirmar la reserva.");
             }
         }
@@ -167,6 +191,7 @@ export function reservationController() {
 
     //Limpia los valores de los inputs del datetimepicker
     function limpiarYResetearFechas() {
+        console.log('🧹 Limpiando y reinicializando pickers.');
         // Borrar fechas cargadas
         try {
             $('#reservationdatein').datetimepicker('destroy');

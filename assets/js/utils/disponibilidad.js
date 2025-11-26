@@ -10,8 +10,8 @@ export function seSolapan(resIn, resOut, checkInPropuesto, checkOutPropuesto) {
     return !(outDate <= resInDate || inDate >= resOutDate);
 }
 
-export function haySolapamiento(roomId, checkInISO, checkOutISO, allReservations) {
-    const resOcupada = allReservations.some(res => {
+export function haySolapamiento(roomId, checkInISO, checkOutISO, activeReservations) {
+    const resOcupada = activeReservations.some(res => {
         // Ignorar si no es la habitación que estamos verificando
         if (parseInt(res.roomId) !== parseInt(roomId)) return false;
 
@@ -38,9 +38,16 @@ export async function getHabitacionesDisponibles(checkInISO, checkOutISO) {
         return [];
     }
 
+    // Filtrar solo reservas activas
+
+    const activeReservations = allReservations.filter(res => {
+        const estado = res.estado.toLowerCase();
+        return estado === 'pendiente' || estado === 'confirmada' || estado === 'confirmado';
+    });
+
     const disponibles = habitacionesHabilitadas.filter(hab =>
         // Solo incluimos la habitación si NO hay solapamiento
-        !haySolapamiento(hab.id, checkInISO, checkOutISO, allReservations)
+        !haySolapamiento(hab.id, checkInISO, checkOutISO, activeReservations)
     );
 
     return disponibles;
