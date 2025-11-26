@@ -1,6 +1,24 @@
 import { reservationService, roomService } from "../services/apiServices.js";
 import { getActualUser } from "../services/storageService.js";
-import {formatearFecha} from "../utils/date-init.js";
+import { formatearFecha } from "../utils/date-init.js";
+
+async function cancelarReserva(reservationId) {
+    if (!confirm('¿Estás seguro de que quieres cancelar esta reserva? Esta acción es irreversible.')) {
+        return;
+    }
+
+    try {
+        await reservationService.update(reservationId, { estado: 'Cancelada' });
+        alert('Reserva cancelada correctamente.');
+
+        // Recargar la vista 
+        await renderMiReservaView();
+
+    } catch (error) {
+        console.error('Error al cancelar la reserva:', error);
+        alert('Hubo un error al intentar cancelar la reserva. Por favor, inténtalo de nuevo.');
+    }
+}
 
 export async function renderMiReservaView() {
     console.log('Renderizando Reservas');
@@ -41,6 +59,7 @@ export async function renderMiReservaView() {
                     </td>
                 </tr>
             `;
+            setupEventListeners();
             return;
         }
 
@@ -112,21 +131,39 @@ export async function renderMiReservaView() {
         `;
     }
 
+    //Manejo de eventos
+    function setupEventListeners() {
+        const tbody = document.querySelector("#tbodyMisReservas");
+        const logoutBtn = document.querySelector("#logoutBtn");
+
+        // Remover listeners anteriores
+        tbody.removeEventListener('click', manejoBotonCancel);
+        if (logoutBtn) {
+            logoutBtn.removeEventListener('click', manejoBotonLogout);
+        }
+        // Configurar el listener de Cancelación
+        tbody.addEventListener('click', manejoBotonCancel);
+
+        // Configurar el listener de Logout
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', manejoBotonLogout);
+        }
+    }
+
     // Event listener para cancelar
-    tbody.addEventListener('click', async (e) => {
+    async function manejoBotonCancel(e) {
         const cancelBtn = e.target.closest('.btnCancelar');
         if (!cancelBtn) return;
 
         const reservationId = cancelBtn.dataset.id;
         await cancelarReserva(reservationId);
-    });
+    }
 
     // Logout
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('usuarioActual');
-            window.location.href = '#/login';
-        });
+    function manejoBotonLogout() {
+        localStorage.removeItem('usuarioActual');
+        window.location.href = '#/login';
     }
+    setupEventListeners();
 }
 
