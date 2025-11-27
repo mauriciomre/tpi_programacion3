@@ -3,20 +3,40 @@ import { getActualUser } from "../services/storageService.js";
 import { formatearFecha } from "../utils/date-init.js";
 
 async function cancelarReserva(reservationId) {
-    if (!confirm('¿Estás seguro de que quieres cancelar esta reserva? Esta acción es irreversible.')) {
+    const resultado = await Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¡No podrás revertir esta cancelación! El estado cambiará a CANCELADO.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#DC3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: "Sí, cancelar",
+        cancelButtonText: "No, mantener"
+    });
+    if (!resultado.isConfirmed) {
         return;
     }
 
     try {
         await reservationService.update(reservationId, { estado: 'Cancelada' });
-        alert('Reserva cancelada correctamente.');
+        Swal.fire({
+            icon: "success",
+            title: "CANCELADA",
+            text: "Reserva cancelada correctamente.",
+            confirmButtonText: "Aceptar",
+        });
 
         // Recargar la vista 
         await renderMiReservaView();
 
     } catch (error) {
         console.error('Error al cancelar la reserva:', error);
-        alert('Hubo un error al intentar cancelar la reserva. Por favor, inténtalo de nuevo.');
+        Swal.fire({
+            icon: "error",
+            title: "Cancelación fallida",
+            text: "Hubo un error al intentar cancelar la reserva. Por favor, inténtalo de nuevo.",
+            confirmButtonText: "Aceptar",
+        });
     }
 }
 
@@ -87,7 +107,12 @@ export function renderMiReservaView() {
         const tbody = await waitForElement("#tbodyMisReservas");
         const usuarioActual = getActualUser();
         if (!usuarioActual) {
-            alert('Debes iniciar sesion.');
+            Swal.fire({
+                icon: "warning",
+                title: "INICIA SESIÓN",
+                text: "No hay usuario logueado.",
+                confirmButtonText: "Aceptar",
+            });
             window.location.href = '#/login';
             return;
         }

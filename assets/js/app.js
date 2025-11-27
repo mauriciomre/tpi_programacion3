@@ -45,7 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     // Si NO es administrador o NO está logueado, lo redirigimos
                     window.location.hash = '#/inicio';
-                    alert('Acceso denegado. Solo para administradores.');
+                    Swal.fire({
+                        icon: "error",
+                        title: "ACCERO RESTRINGIDO",
+                        text: "'Acceso denegado. Solo para administradores..",
+                        confirmButtonText: "Aceptar",
+                    });
+
                 }
             case "pages/miReserva.html":
                 renderMiReservaView();

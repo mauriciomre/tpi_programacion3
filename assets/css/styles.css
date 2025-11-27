@@ -186,6 +186,17 @@
     font-weight: bold;
 }
 
+.swal2-confirm {
+    background-color: #eab034 !important;
+    color: white !important;
+    border-color: #eab034 !important;
+}
+
+.swal2-confirm:hover {
+    background-color: #0a322c !important;
+    border-color: #0a322c !important;
+}
+
 @media (max-width: 768px) {
     .display-4 {
         font-size: 2rem;

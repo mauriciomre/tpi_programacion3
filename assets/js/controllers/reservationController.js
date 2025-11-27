@@ -153,8 +153,14 @@ export function reservationController() {
             try {
                 const user = getActualUser();
                 if (!user) {
-                    alert("⚠️ No hay usuario logueado.");
+                    Swal.fire({
+                        icon: "warning",
+                        title: "INICIA SESIÓN",
+                        text: "No hay usuario logueado.",
+                        confirmButtonText: "Aceptar",
+                    });
                     return;
+
                 }
 
                 const nuevaReserva = {
@@ -178,12 +184,19 @@ export function reservationController() {
                     confirmButtonText: "Aceptar",
                 });
 
+
                 document.querySelector("#habitacionesDisponiblesContainer").innerHTML = "";
                 document.querySelector("#habitacionSeleccionadaContainer").innerHTML = "";
 
             } catch (error) {
                 console.error("🛑 Error al crear reserva:", error);
-                alert("No se pudo confirmar la reserva.");
+                Swal.fire({
+                    icon: "error",
+                    title: "Reserva Fallida",
+                    text: "No se pudo confirmar la reserva.",
+                    confirmButtonText: "Aceptar",
+                });
+
             }
         }
 
