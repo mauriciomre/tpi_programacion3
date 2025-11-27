@@ -90,6 +90,22 @@
     color: #0a322c !important;
 }
 
+.btn-secondary {
+    background-color: #0a322c !important;
+    border-color: #eab034 !important;
+    color: #fff !important;
+    font-family: "Raleway";
+
+}
+
+.btn-secondary:hover {
+    background-color: #eab034 !important;
+    border-color: #eab034 !important;
+    color: #0a322c !important;
+    font-family: "Raleway";
+
+}
+
 .card-personalizada {
     max-width: 100% !important;
     width: 100%;

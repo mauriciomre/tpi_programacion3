@@ -9,7 +9,12 @@ export async function handleLogin(email, password) {
     //validar mail y pass
 
     if (email === "" || password === "") {
-        alert("No puedes dejar campos vacios");
+        await Swal.fire({
+            icon: "warning",
+            title: "¡Atención!",
+            text: "No puedes dejar campos vacíos",
+            confirmButtonText: "Aceptar",
+        });
         return false;
     }
 
@@ -17,12 +22,22 @@ export async function handleLogin(email, password) {
         const user = await userService.getByEmail(email);
 
         if (user === null) {
-            alert("Usuario no encontrado");
+            Swal.fire({
+                icon: "warning",
+                title: "¡Atención!",
+                text: "Usuario no encontrado",
+                confirmButtonText: "Aceptar",
+            });
             return false;
         }
 
         if (user.password !== password) {
-            alert("Contraseña Incorrecta");
+            Swal.fire({
+                icon: "warning",
+                title: "¡Atención!",
+                text: "Contraseña Incorrecta",
+                confirmButtonText: "Aceptar",
+            });
             return false;
         }
         // login exitoso
@@ -30,7 +45,12 @@ export async function handleLogin(email, password) {
 
         const userName = user.nombre || user.email
         saveUser(user);
-        alert(`Bienvenid@ ${user.nombre}`);
+        Swal.fire({
+            icon: "success",
+            title: "¡Bienvenido!",
+            text: `Bienvenido ${user.nombre}`,
+            confirmButtonText: "Aceptar",
+        });
 
         const userRoleUpper = user.role ? user.role.toUpperCase() : "USUARIO";
         console.log(`DEBUG: El rol del usuario en MAYÚSCULAS es: "${userRoleUpper}"`);
@@ -48,7 +68,12 @@ export async function handleLogin(email, password) {
         return true;
     } catch (error) {
         console.error(`Error al iniciar sesión: ${error}`);
-        alert("Error al iniciar seesion.");
+        Swal.fire({
+            icon: "error",
+            title: "¡Error!",
+            text: "Error al iniciar seesion.",
+            confirmButtonText: "Aceptar",
+        });
         return false;
     }
 }
@@ -59,12 +84,22 @@ export async function handleRegister(nombre, email, password) {
     console.log(`intentando registrar con ${email} y ${nombre}`);
 
     if (nombre === "" || email === "" || password === "") {
-        alert("No puedes dejar campos vacios");
+        Swal.fire({
+            icon: "warning",
+            title: "¡Cuidado!",
+            text: "No puedes dejar campos vacios",
+            confirmButtonText: "Aceptar",
+        });
         return false;
     }
 
     if (password.length < 6) {
-        alert('La contraseña debe tener al menos 6 caracteres');
+        Swal.fire({
+            icon: "warning",
+            title: "¡Cuidado!",
+            text: "La contraseña debe tener al menos 6 caracteres",
+            confirmButtonText: "Aceptar",
+        });
         return false;
     }
 
@@ -73,7 +108,12 @@ export async function handleRegister(nombre, email, password) {
         const existingUser = await userService.getByEmail(email);
 
         if (existingUser !== null) {
-            alert("Este email ya esta registrado");
+            Swal.fire({
+                icon: "warning",
+                title: "¡Cuidado!",
+                text: `Este email ya esta registrado`,
+                confirmButtonText: "Aceptar",
+            });
             return false;
         }
         const newUser = await userService.create({
@@ -86,14 +126,24 @@ export async function handleRegister(nombre, email, password) {
         console.log("Usuario creado:", newUser);
 
         saveUser(newUser);
-        alert(`Bienvenido ${newUser.nombre}`);
+        Swal.fire({
+            icon: "success",
+            title: "¡Bienvenido!",
+            text: `Bienvenido ${newUser.nombre}`,
+            confirmButtonText: "Aceptar",
+        });
 
         window.location.href = "#/reservations";
 
         return true;
     } catch (error) {
         console.error(`Error de login: ${error}`);
-        alert("Error al registrar usuario.");
+        Swal.fire({
+            icon: "error",
+            title: "¡Error!",
+            text: "Error al registrar usuario.",
+            confirmButtonText: "Aceptar",
+        });
         return false;
     }
 }
@@ -105,7 +155,12 @@ export async function adminCreateUser(nombre, email, password, role) {
     console.log(`intentando registrar con ${email}, ${nombre} y ${role}`);
 
     if (nombre === "" || email === "" || password === "" || role === "") {
-        alert("No puedes dejar campos vacios");
+        Swal.fire({
+            icon: "warning",
+            title: "¡Cuidado!",
+            text: "No puedes dejar campos vacios",
+            confirmButtonText: "Aceptar",
+        });
         return false;
     }
 
@@ -114,7 +169,13 @@ export async function adminCreateUser(nombre, email, password, role) {
         const existingUser = await userService.getByEmail(email);
 
         if (existingUser !== null) {
-            alert("Este email ya esta registrado");
+            Swal.fire({
+                icon: "warning",
+                title: "¡Cuidado!",
+                text: `Este email ya esta registrado`,
+                confirmButtonText: "Aceptar",
+            });
+
             return false;
         }
         const newUser = await userService.create({
@@ -127,13 +188,23 @@ export async function adminCreateUser(nombre, email, password, role) {
         console.log("Usuario creado por admin:", newUser);
 
         saveUser(newUser);
-        alert(`Usuario ${newUser.nombre} creado`);
+        Swal.fire({
+            icon: "success",
+            title: "Registro correcto",
+            text: `Usuario ${newUser.nombre} creado`,
+            confirmButtonText: "Aceptar",
+        });
 
         return true;
 
     } catch (error) {
         console.error(`Error de login: ${error}`);
-        alert("Error al crear usuario.");
+        Swal.fire({
+            icon: "error",
+            title: "Falló registro",
+            text: `Error al crear usuario.`,
+            confirmButtonText: "Aceptar",
+        });
         return false;
     }
 }
@@ -141,17 +212,32 @@ export async function adminCreateUser(nombre, email, password, role) {
 export async function adminChangePassword(idUser, newPassword) {
 
     if (newPassword === '' || newPassword.length < 6) {
-        alert('La contraseña debe tener al menos 6 caracteres');
+        Swal.fire({
+            icon: "warning",
+            title: "Corrige",
+            text: "La contraseña debe tener al menos 6 caracteres",
+            confirmButtonText: "Aceptar",
+        });
         return false;
     }
 
     try {
         await userService.changePassword(idUser, newPassword);
-        alert('Contraseña cambiada con exito.');
+        Swal.fire({
+            icon: "Succes",
+            title: "Contraseña cambiada",
+            text: `Contraseña cambiada con exito.`,
+            confirmButtonText: "Aceptar",
+        });
 
         return true;
     } catch (error) {
-        alert('Error al cambiar de contraseña');
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: `Error al cambiar de contraseña`,
+            confirmButtonText: "Aceptar",
+        });
         return false;
     }
 }

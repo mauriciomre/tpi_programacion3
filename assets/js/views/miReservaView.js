@@ -8,8 +8,6 @@ async function cancelarReserva(reservationId) {
         text: "¡No podrás revertir esta cancelación! El estado cambiará a CANCELADO.",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#DC3545',
-        cancelButtonColor: '#6c757d',
         confirmButtonText: "Sí, cancelar",
         cancelButtonText: "No, mantener"
     });

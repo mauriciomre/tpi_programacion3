@@ -732,7 +732,7 @@ export async function dashboardController() {
             return "badge-warning";
         }
 
-        if (estado == "cancelado") {
+        if (estado == "cancelado" || "cancelada") {
             return "badge-danger";
         }
     }

@@ -30,7 +30,7 @@ export function renderizarLoginView() {
 
 }
 
-export function renderizarRegisterView(){
+export function renderizarRegisterView() {
     console.log('Renderizando register view')
 
     if (isAuthenticated()) {
@@ -46,7 +46,7 @@ export function renderizarRegisterView(){
 
     const registerForm = document.getElementById("registerForm");
 
-    if (registerForm === null){
+    if (registerForm === null) {
         console.error('No se encontro el formulario de registro...')
         return;
     }
