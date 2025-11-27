@@ -61,6 +61,18 @@ function updateNavbar() {
             });
         }
     }
+    // LLógica para cerrar el menú responsive
+    const navbarCollapse = document.getElementById('navbarNavAltMarkup');
+    const allNavItems = navContainer.querySelectorAll('a.nav-link, button#logoutBtn');
+
+    allNavItems.forEach(item => {
+        item.addEventListener('click', () => {
+            // Verifica si el menú está abierto (tiene la clase 'show') y lo cierra
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                navbarCollapse.classList.remove('show');
+            }
+        });
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
