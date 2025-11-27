@@ -121,8 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         text: "'Acceso denegado. Solo para administradores..",
                         confirmButtonText: "Aceptar",
                     });
-
-                }
+                } break;
             case "pages/miReserva.html":
                 renderMiReservaView();
                 break;
