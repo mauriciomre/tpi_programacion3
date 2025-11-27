@@ -4,7 +4,64 @@ import { reservationController } from "./controllers/reservationController.js";
 import { renderizarLoginView, renderizarRegisterView } from "./views/loginView.js";
 import { dashboardController } from "./controllers/dashboardController.js";
 import { renderMiReservaView } from "./views/miReservaView.js";
-import { getActualUser, isAuthenticated } from "./services/storageService.js";
+import { getActualUser, isAuthenticated, esAdmin, logout } from "./services/storageService.js";
+
+function updateNavbar() {
+    const navContainer = document.getElementById('navbar-links-container');
+    if (!navContainer) return;
+
+    const user = getActualUser();
+    const loggedIn = isAuthenticated();
+    const isAdmin = esAdmin();
+
+    let navHTML = '';
+
+    //Enlaces para TODOS (Inicio y Reservar Online siempre visibles)
+    navHTML += `<a class="nav-link text-white rounded active" href="#">Inicio</a>`;
+    navHTML += `<a class="nav-link text-white rounded" href="#/reservas">Reservar Online</a>`;
+
+    // Enlaces si NO está logueado
+    if (!loggedIn) {
+        navHTML += `<a class="nav-link text-white rounded" href="#/login">Iniciar sesión</a>`;
+    }
+
+    //Enlaces si SÍ está logueado
+    if (loggedIn) {
+        // Enlace de Dashboard (SOLO ADMIN)
+        if (isAdmin) {
+            navHTML += `<a class="nav-link text-white rounded" href="#/dashboard">Control Panel</a>`;
+        }
+
+        // Enlace Mis Reservas (TODOS los logueados)
+        navHTML += `<a class="nav-link text-white rounded" href="#/mis-reservas">Mis Reservas</a>`;
+
+        const userName = user.nombre || user.email;
+        navHTML += `
+            <span class="nav-link text-white rounded d-flex align-items-center user-info">
+                <i class="fas fa-user-circle mr-2" style="font-size: 1.2rem;"></i>
+                <strong>${userName}</strong>
+            </span>
+        `;
+
+        // Botón de Cerrar Sesión
+        navHTML += `<button id="logoutBtn" class="btn btn-secondary ml-md-2">Cerrar Sesión</button>`;
+    }
+
+    navContainer.innerHTML = navHTML;
+
+    // 4. Adjuntar el evento de Logout al botón si existe
+    if (loggedIn) {
+        const logoutButton = document.getElementById('logoutBtn');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                logout(); // La función logout() de storageService.js ya maneja la redirección
+                // No necesitamos llamar a updateNavbar aquí, ya que la redirección a '#/login'
+                // forzará al router a ejecutar el handleRouteChange y el onPageLoaded.
+            });
+        }
+    }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
@@ -21,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 👇 Se ejecuta DESPUÉS de cada carga de vista
     router.onPageLoaded = (path) => {
+        updateNavbar();
         // Ejecutar solo en la página de reservas
         if (path.includes("reservations.html")) {
             initDatePickers();
@@ -62,4 +120,5 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     router.init();
+    updateNavbar();
 });

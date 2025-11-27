@@ -31,7 +31,7 @@ export function esAdmin() {
     if (user === null) {
         return false;
     }
-    return user.role === 'ADMIN';
+    return user.role.toUpperCase() === 'ADMIN';
 }
 
 //UTILIZANDO WINDOW BOM (verificar)(verificar)(verificar)
@@ -52,7 +52,7 @@ export function requiereAuth() {
 
 // verificar admin. FALTA terminar de completar el href FALTA terminar de completar el href
 
-export function requiereAdmin(){
+export function requiereAdmin() {
     if (!isAuthenticated()) {
         alert('Debes iniciar sesion...');
         window.location.href = '#/login';

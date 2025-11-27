@@ -138,6 +138,11 @@
 
 }
 
+.card-personalizada .input-group-text i {
+    font-family: 'Font Awesome 5 Free', 'Font Awesome', sans-serif !important;
+    font-weight: 900 !important;
+}
+
 #habitacionSeleccionadaContainer {
     padding-top: 80px;
     margin-top: -80px;
@@ -169,11 +174,8 @@
     color: #0a322c !important;
 }
 
-.card.card-primary .card-body,
-.card.card-primary .card-body *,
 .card-primary .form-group label,
-.card-primary .form-control,
-.card-primary .input-group-text {
+.card-primary .form-control {
     font-family: "Raleway" !important;
     font-weight: 400;
 }
