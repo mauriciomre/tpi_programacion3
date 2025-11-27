@@ -55,9 +55,7 @@ function updateNavbar() {
         if (logoutButton) {
             logoutButton.addEventListener('click', (e) => {
                 e.preventDefault();
-                logout(); // La función logout() de storageService.js ya maneja la redirección
-                // No necesitamos llamar a updateNavbar aquí, ya que la redirección a '#/login'
-                // forzará al router a ejecutar el handleRouteChange y el onPageLoaded.
+                logout(); // La función logout() redirige
             });
         }
     }

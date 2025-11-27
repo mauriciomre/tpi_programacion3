@@ -62,7 +62,7 @@ export async function handleLogin(email, password) {
         } else {
             //
             console.log("DEBUG: Rama USUARIO seleccionada.");
-            window.location.href = "#/reservations";
+            window.location.href = "#/mis-reservas";
         }
 
         return true;
